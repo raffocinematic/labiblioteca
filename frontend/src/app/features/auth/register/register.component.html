@@ -1,0 +1,53 @@
+<main class="auth-page">
+  <section class="auth-card">
+    <h1>Registrati</h1>
+    <p>Crea un account per accedere alla biblioteca.</p>
+
+    @if (error()) {
+    <div class="alert">
+      {{ error() }}
+    </div>
+    }
+
+    <form [formGroup]="registerForm" (ngSubmit)="register()">
+      <label>
+        Username
+        <input type="text" formControlName="username" autocomplete="username" />
+      </label>
+
+      @if (registerForm.controls.username.touched && registerForm.controls.username.hasError('minlength')) {
+      <p class="field-error">
+        Lo username deve avere almeno 3 caratteri.
+      </p>
+      }
+
+      <label>
+        Password
+        <input type="password" formControlName="password" autocomplete="new-password" />
+      </label>
+
+      @if (registerForm.controls.password.touched && registerForm.controls.password.hasError('minlength')) {
+      <p class="field-error">
+        La password deve avere almeno 8 caratteri.
+      </p>
+      }
+
+      <label>
+        Conferma password
+        <input type="password" formControlName="confirmPassword" autocomplete="new-password" />
+      </label>
+
+      @if (registerForm.controls.confirmPassword.touched && registerForm.controls.confirmPassword.hasError('minlength')) {
+      <p class="field-error">
+        La conferma password deve avere almeno 8 caratteri.
+      </p>
+      }
+
+      <button type="submit" [disabled]="loading()">
+        {{ loading() ? 'Registrazione...' : 'Registrati' }}
+      </button>
+    </form>
+
+    <a routerLink="/login">Hai già un account? Accedi</a>
+  </section>
+</main>

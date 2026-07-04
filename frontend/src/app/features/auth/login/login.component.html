@@ -1,0 +1,30 @@
+<main class="auth-page">
+  <section class="auth-card">
+    <h1>Accedi</h1>
+    <p>Entra nella gestione della biblioteca.</p>
+
+    @if (error()) {
+    <div class="alert">
+      {{ error() }}
+    </div>
+    }
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <label>
+        Username
+        <input type="text" formControlName="username" autocomplete="username" />
+      </label>
+
+      <label>
+        Password
+        <input type="password" formControlName="password" autocomplete="current-password" />
+      </label>
+
+      <button type="submit" [disabled]="loading()">
+        {{ loading() ? 'Accesso...' : 'Login' }}
+      </button>
+    </form>
+
+    <a routerLink="/register">Non hai un account? Registrati</a>
+  </section>
+</main>

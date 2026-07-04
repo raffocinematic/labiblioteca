@@ -1,0 +1,106 @@
+<app-page-header
+  title="Libri"
+  description="Gestione del catalogo libri della biblioteca."
+/>
+
+@if (error()) {
+<div class="alert">
+  {{ error() }}
+</div>
+}
+
+<section class="panel form-panel">
+  <h2>{{ editingBookId() === null ? 'Nuovo libro' : 'Modifica libro' }}</h2>
+
+  <form [formGroup]="bookForm" (ngSubmit)="saveBook()">
+    <div class="form-grid">
+      <label>
+        Titolo
+        <input type="text" formControlName="title" />
+      </label>
+
+      <label>
+        Autore
+        <input type="text" formControlName="author" />
+      </label>
+
+      <label>
+        ISBN
+        <input type="text" formControlName="isbn" />
+      </label>
+
+      <label>
+        Anno pubblicazione
+        <input type="number" formControlName="publicationYear" />
+      </label>
+
+      <label>
+        Copie totali
+        <input type="number" formControlName="totalCopies" />
+      </label>
+
+      <label>
+        Copie disponibili
+        <input type="number" formControlName="availableCopies" />
+      </label>
+    </div>
+
+    <div class="actions">
+      <button type="submit" [disabled]="saving()">
+        {{ editingBookId() === null ? 'Crea libro' : 'Salva modifiche' }}
+      </button>
+
+      @if (editingBookId() !== null) {
+      <button type="button" class="secondary" (click)="resetForm()">
+        Annulla
+      </button>
+      }
+    </div>
+  </form>
+</section>
+
+<section class="panel">
+  @if (loading()) {
+  <p class="state">Caricamento...</p>
+  } @else if (books().length === 0) {
+  <p class="state">Nessun libro presente.</p>
+  } @else {
+  <div class="table-wrap">
+    <table>
+      <thead>
+      <tr>
+        <th>Titolo</th>
+        <th>Autore</th>
+        <th>ISBN</th>
+        <th>Anno</th>
+        <th>Copie</th>
+        <th>Disponibili</th>
+        <th>Azioni</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      @for (book of books(); track book.id) {
+      <tr>
+        <td>{{ book.title }}</td>
+        <td>{{ book.author }}</td>
+        <td>{{ book.isbn }}</td>
+        <td>{{ book.publicationYear ?? '-' }}</td>
+        <td>{{ book.totalCopies }}</td>
+        <td>{{ book.availableCopies }}</td>
+        <td class="row-actions">
+          <button type="button" class="secondary" (click)="editBook(book)">
+            Modifica
+          </button>
+
+          <button type="button" class="danger" (click)="deleteBook(book)">
+            Elimina
+          </button>
+        </td>
+      </tr>
+      }
+      </tbody>
+    </table>
+  </div>
+  }
+</section>

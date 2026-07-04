@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: biblioteca-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-biblioteca}
+      POSTGRES_USER: ${POSTGRES_USER:-biblioteca}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-biblioteca}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - biblioteca-postgres-data:/var/lib/postgresql/data
+
+volumes:
+  biblioteca-postgres-data:

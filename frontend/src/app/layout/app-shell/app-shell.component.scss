@@ -1,0 +1,21 @@
+.user {
+  color: #9fb0bf;
+  font-size: 0.875rem;
+  margin-bottom: 18px;
+}
+
+.logout {
+  background: transparent;
+  border: 1px solid #3b4b56;
+  border-radius: 6px;
+  color: #ffffff;
+  cursor: pointer;
+  margin-top: 24px;
+  padding: 10px 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.logout:hover {
+  background: #24313a;
+}

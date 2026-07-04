@@ -1,0 +1,124 @@
+.panel {
+  background: #ffffff;
+  border: 1px solid #d9e0e6;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.form-panel {
+  padding: 20px;
+}
+
+h2 {
+  font-size: 1.125rem;
+  margin: 0 0 16px;
+}
+
+.form-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+label {
+  color: #33404c;
+  display: grid;
+  font-size: 0.875rem;
+  font-weight: 600;
+  gap: 6px;
+}
+
+input {
+  border: 1px solid #cbd5df;
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+input:focus {
+  border-color: #2563eb;
+  outline: none;
+}
+
+.actions,
+.row-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions {
+  margin-top: 16px;
+}
+
+button {
+  background: #2563eb;
+  border: 0;
+  border-radius: 6px;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 9px 12px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+button.secondary {
+  background: #e6ebf0;
+  color: #1f2933;
+}
+
+button.danger {
+  background: #b42318;
+}
+
+.alert {
+  background: #fff1f0;
+  border: 1px solid #ffccc7;
+  border-radius: 6px;
+  color: #b42318;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+}
+
+.state {
+  color: #52616d;
+  margin: 0;
+  padding: 20px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  min-width: 900px;
+  width: 100%;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e6ebf0;
+  padding: 12px 14px;
+  text-align: left;
+}
+
+th {
+  background: #f8fafc;
+  color: #52616d;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+td {
+  color: #1f2933;
+}
+
+@media (max-width: 900px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
