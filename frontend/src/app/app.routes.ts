@@ -19,8 +19,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        pathMatch: 'full',
-        redirectTo: 'books'
+        loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent)
       },
       {
         path: 'books',
@@ -30,6 +29,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'books'
+    redirectTo: ''
   }
 ];

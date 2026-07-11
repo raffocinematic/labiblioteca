@@ -1,19 +1,31 @@
 <div class="shell">
-  <aside class="sidebar">
-    <div class="brand">Biblioteca</div>
+  <header class="topbar">
+    <button type="button" class="menu-button" (click)="toggleMenu()" aria-label="Apri menu">
+      ☰
+    </button>
 
+    <a class="brand" routerLink="/" (click)="closeMenu()">Biblioteca</a>
+
+    <div class="topbar-spacer"></div>
+  </header>
+
+  @if (menuOpen()) {
+  <div class="backdrop" (click)="closeMenu()"></div>
+
+  <aside class="side-menu">
     <div class="user">
       {{ authService.currentUsername() }}
     </div>
 
     <nav aria-label="Navigazione principale">
-      <a routerLink="/books" routerLinkActive="active">Libri</a>
+      <a routerLink="/books" routerLinkActive="active" (click)="closeMenu()">Libri</a>
     </nav>
 
     <button type="button" class="logout" (click)="logout()">
       Logout
     </button>
   </aside>
+  }
 
   <main class="content">
     <router-outlet />

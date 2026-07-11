@@ -39,9 +39,10 @@ export class LoginComponent {
     this.error.set(null);
 
     this.authService.login(this.loginForm.getRawValue()).subscribe({
-      next: () => {
-        this.router.navigateByUrl('/books');
-      },
+      //così dopo la login, arrivi alla landing page.
+     next: () => {
+       this.router.navigateByUrl('/');
+     },
       error: (error: HttpErrorResponse) => {
         const apiError = error.error as ApiError | null;
         this.error.set(apiError?.message ?? 'Login non riuscito.');
