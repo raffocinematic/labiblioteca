@@ -140,11 +140,11 @@ Risposta:
   "role": "ROLE_USER"
 }
 Books
-GET /api/books
-GET /api/books/{id}
-POST /api/books
-PUT /api/books/{id}
-DELETE /api/books/{id}
+GET /api/catalog/books
+GET /api/catalog/books/{id}
+POST /api/catalog/books
+PUT /api/catalog/books/{id}
+DELETE /api/catalog/books/{id}
 Sicurezza
 Le password non vengono salvate in chiaro nel database.
 Durante la registrazione:

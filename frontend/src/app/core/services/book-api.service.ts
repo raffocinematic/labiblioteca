@@ -9,7 +9,7 @@ import { Book, BookRequest } from '../models/book.model';
   providedIn: 'root'
 })
 export class BookApiService {
-  private readonly booksUrl = `${API_BASE_URL}/books`;
+  private readonly booksUrl = `${API_BASE_URL}/catalog/books`;
 
   constructor(private readonly http: HttpClient) {
     }

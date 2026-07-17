@@ -81,7 +81,7 @@ class BookControllerTest {
     }
 
     /*
-     * GET /api/books.
+     * GET /api/catalog/books.
      *
      * Il service restituisce due libri e il controller deve rispondere 200
      * con un array JSON di due elementi.
@@ -92,7 +92,7 @@ class BookControllerTest {
         when(bookService.findAll()).thenReturn(List.of(bookWithId(1L), bookWithId(2L)));
 
         // Act + Assert
-        mockMvc.perform(get("/api/books"))
+        mockMvc.perform(get("/api/catalog/books"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -108,8 +108,8 @@ class BookControllerTest {
         // Arrange
         when(bookService.findById(1L)).thenReturn(bookWithId(1L));
 
-        // Act + Assert: GET /api/books/{id} deve restituire il DTO del libro.
-        mockMvc.perform(get("/api/books/1"))
+        // Act + Assert: GET /api/catalog/books/{id} deve restituire il DTO del libro.
+        mockMvc.perform(get("/api/catalog/books/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("Clean Code"))
@@ -129,11 +129,11 @@ class BookControllerTest {
         when(bookService.findById(99L)).thenThrow(new NotFoundException("Libro non trovato: 99"));
 
         // Act + Assert
-        mockMvc.perform(get("/api/books/99"))
+        mockMvc.perform(get("/api/catalog/books/99"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").value("Libro non trovato: 99"))
-                .andExpect(jsonPath("$.path").value("/api/books/99"));
+                .andExpect(jsonPath("$.path").value("/api/catalog/books/99"));
 
         verify(bookService).findById(99L);
     }
@@ -150,7 +150,7 @@ class BookControllerTest {
          * contentType("application/json") dice a Spring di leggere il body come JSON.
          * objectMapper.writeValueAsString(request) converte il DTO Java in JSON.
          */
-        mockMvc.perform(post("/api/books")
+        mockMvc.perform(post("/api/catalog/books")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -175,7 +175,7 @@ class BookControllerTest {
          * Il controller non deve arrivare al service: @Valid blocca prima la request
          * e GlobalExceptionHandler restituisce un JSON con validationErrors.
          */
-        mockMvc.perform(post("/api/books")
+        mockMvc.perform(post("/api/catalog/books")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -197,8 +197,8 @@ class BookControllerTest {
 
         when(bookService.update(1L, request)).thenReturn(updatedBook);
 
-        // Act + Assert: PUT /api/books/{id} deve rispondere 200 con il libro aggiornato.
-        mockMvc.perform(put("/api/books/1")
+        // Act + Assert: PUT /api/catalog/books/{id} deve rispondere 200 con il libro aggiornato.
+        mockMvc.perform(put("/api/catalog/books/1")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -222,7 +222,7 @@ class BookControllerTest {
                 .thenThrow(new ConflictException("Esiste gia' un altro libro con ISBN: ISBN-2"));
 
         // Act + Assert: ConflictException deve diventare HTTP 409.
-        mockMvc.perform(put("/api/books/1")
+        mockMvc.perform(put("/api/catalog/books/1")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
@@ -239,7 +239,7 @@ class BookControllerTest {
          * Il controller ha @ResponseStatus(HttpStatus.NO_CONTENT), quindi
          * ci aspettiamo 204 e nessun body.
          */
-        mockMvc.perform(delete("/api/books/1"))
+        mockMvc.perform(delete("/api/catalog/books/1"))
                 .andExpect(status().isNoContent());
 
         verify(bookService).delete(1L);
@@ -255,7 +255,7 @@ class BookControllerTest {
                 .when(bookService).delete(99L);
 
         // Act + Assert: anche su DELETE, NotFoundException deve diventare 404.
-        mockMvc.perform(delete("/api/books/99"))
+        mockMvc.perform(delete("/api/catalog/books/99"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.message").value("Libro non trovato: 99"));

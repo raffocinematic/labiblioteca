@@ -1,3 +1,94 @@
-<section class="home">
-  <h1>Benvenuti nella biblioteca di Raffo</h1>
+<section class="dashboard">
+  <div class="hero">
+    <img
+      class="hero-image"
+      src="/library-dashboard-hero.png"
+      alt="Illustrazione di una postazione moderna per la gestione del catalogo biblioteca"
+    />
+
+    <div class="hero-overlay">
+      <p class="eyebrow">Gestionale biblioteca</p>
+      <h1>Ciao, {{ authService.currentUsername() || 'utente' }}</h1>
+      <p class="subtitle">Riepilogo operativo del catalogo e accesso rapido alle attivita principali.</p>
+
+      <div class="quick-actions" aria-label="Azioni rapide">
+        <a routerLink="/books" class="primary-action">Gestisci libri</a>
+        <button type="button" class="secondary-action" (click)="loadBooks()">Aggiorna dati</button>
+      </div>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="alert">
+      {{ error() }}
+    </div>
+  }
+
+  <div class="stats-grid">
+    <article class="stat-card">
+      <span class="stat-label">Titoli catalogati</span>
+      <strong>{{ stats().titles }}</strong>
+    </article>
+
+    <article class="stat-card">
+      <span class="stat-label">Copie totali</span>
+      <strong>{{ stats().totalCopies }}</strong>
+    </article>
+
+    <article class="stat-card">
+      <span class="stat-label">Copie disponibili</span>
+      <strong>{{ stats().availableCopies }}</strong>
+    </article>
+
+    <article class="stat-card warning">
+      <span class="stat-label">Titoli non disponibili</span>
+      <strong>{{ stats().unavailableTitles }}</strong>
+    </article>
+  </div>
+
+  <div class="content-grid">
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Catalogo recente</h2>
+          <p>Ultimi libri caricati nel sistema.</p>
+        </div>
+        <a routerLink="/books">Apri catalogo</a>
+      </div>
+
+      @if (loading()) {
+        <p class="state">Caricamento...</p>
+      } @else if (recentBooks().length === 0) {
+        <p class="state">Nessun libro presente nel catalogo.</p>
+      } @else {
+        <div class="book-list">
+          @for (book of recentBooks(); track book.id) {
+            <article class="book-row">
+              <div>
+                <h3>{{ book.title }}</h3>
+                <p>{{ book.author }} - ISBN {{ book.isbn }}</p>
+              </div>
+              <span>{{ book.availableCopies }}/{{ book.totalCopies }}</span>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <section class="panel roadmap">
+      <div class="panel-header compact">
+        <div>
+          <h2>Prossime aree</h2>
+          <p>Moduli naturali da aggiungere al gestionale.</p>
+        </div>
+      </div>
+
+      <ul class="todo-list">
+        <li>Autori e collegamento ai libri</li>
+        <li>Iscritti della biblioteca</li>
+        <li>Prestiti, restituzioni e disponibilita</li>
+        <li>Prenotazioni e reportistica</li>
+      </ul>
+    </section>
+  </div>
 </section>

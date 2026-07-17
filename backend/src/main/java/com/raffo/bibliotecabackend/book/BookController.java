@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/books")
+@RequestMapping("/api/catalog/books")
 public class BookController {
 
     private final BookService bookService;

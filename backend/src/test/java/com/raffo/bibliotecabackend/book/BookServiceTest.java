@@ -53,7 +53,7 @@ class BookServiceTest {
     /*
      * Read all.
      *
-     * Il controller espone GET /api/books, ma a livello service la logica
+     * Il controller espone GET /api/catalog/books, ma a livello service la logica
      * corrispondente e' findAll().
      */
     @Test
