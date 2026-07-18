@@ -262,4 +262,18 @@ class BookControllerTest {
 
         verify(bookService).delete(99L);
     }
+
+    @Test
+    void createBookShouldReturn400WhenBookFieldsContainInvalidCharacters() throws Exception {
+        BookRequest request = new BookRequest("Clean Code 123", "Robert Martin!", "ISBN-1", 12345, 3, 2);
+
+        mockMvc.perform(post("/api/catalog/books")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors.title").exists())
+                .andExpect(jsonPath("$.validationErrors.author").exists())
+                .andExpect(jsonPath("$.validationErrors.isbn").exists())
+                .andExpect(jsonPath("$.validationErrors.publicationYear").exists());
+    }
 }

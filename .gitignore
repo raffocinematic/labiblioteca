@@ -29,6 +29,7 @@ frontend/.vscode/*
 frontend/.git-frontend-backup/
 
 # Local development notes
+AUTH.md
 DEVELOP.md
 
 # Environment

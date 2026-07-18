@@ -14,24 +14,37 @@
 
   <form [formGroup]="bookForm" (ngSubmit)="saveBook()">
     <div class="form-grid">
+
       <label>
         Titolo
         <input type="text" formControlName="title" />
+        @if (bookForm.controls.title.touched && bookForm.controls.title.hasError('required')) {
+        <span class="field-error">Il titolo e' obbligatorio.</span>
+        }
+        @if (bookForm.controls.title.touched && bookForm.controls.title.hasError('pattern')) {
+        <span class="field-error">Il titolo puo' contenere solo lettere e spazi.</span>
+        }
       </label>
 
       <label>
         Autore
         <input type="text" formControlName="author" />
+        @if (bookForm.controls.author.touched && bookForm.controls.author.hasError('required')) {
+        <span class="field-error">L'autore e' obbligatorio.</span>
+        }
+        @if (bookForm.controls.author.touched && bookForm.controls.author.hasError('pattern')) {
+        <span class="field-error">L'autore puo' contenere solo lettere e spazi.</span>
+        }
       </label>
 
       <label>
         ISBN
-        <input type="text" formControlName="isbn" />
+        <input type="text" formControlName="isbn" inputmode="numeric" />
       </label>
 
       <label>
         Anno pubblicazione
-        <input type="number" formControlName="publicationYear" />
+        <input type="number" formControlName="publicationYear" min="0" max="9999" />
       </label>
 
       <label>

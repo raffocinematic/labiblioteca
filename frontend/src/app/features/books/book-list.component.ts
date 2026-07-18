@@ -31,11 +31,15 @@ export class BookListComponent implements OnInit {
     private readonly formBuilder: FormBuilder
     ) {
       this.bookForm = this.formBuilder.nonNullable.group({
-        //Validators.required dice che è un campo obbligatorio
-            title: ['', Validators.required],
-            author: ['', Validators.required],
-            isbn: ['', Validators.required],
-            publicationYear: this.formBuilder.control<number | null>(null),
+        // Validators.required dice che è un campo obbligatorio
+        // Regex messa anche nel FE così l'utente vede subito l'errore, anche se la vera protezione sta ovviamente nel BE
+           title: ['', [Validators.required, Validators.pattern(/^[A-Za-z ]+$/)]],
+           author: ['', [Validators.required, Validators.pattern(/^[A-Za-z ]+$/)]],
+           isbn: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
+           publicationYear: this.formBuilder.control<number | null>(null, [
+             Validators.min(0),
+             Validators.max(9999)
+           ]),
             totalCopies: [0, [Validators.required, Validators.min(0)]],
             availableCopies: [0, [Validators.required, Validators.min(0)]]
           });
