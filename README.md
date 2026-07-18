@@ -14,6 +14,7 @@ Il progetto è diviso in:
 - Login utente
 - Password salvate con hash BCrypt
 - Autenticazione tramite JWT
+- Protezione backend degli endpoint privati con Spring Security
 - Migrazioni database con Liquibase
 - Documentazione API con Swagger/OpenAPI
 - Frontend Angular con pagine Login, Register e gestione libri
@@ -182,6 +183,9 @@ La specifica OpenAPI in formato YAML è disponibile su:
 http://localhost:8080/v3/api-docs.yaml
 ```
 
+Swagger UI e la specifica OpenAPI sono endpoint pubblici configurati in Spring Security.
+Gli endpoint applicativi privati, come le API dei libri, richiedono invece un JWT valido.
+
 La dipendenza usata nel backend è:
 
 ```xml
@@ -240,6 +244,12 @@ PUT    /api/catalog/books/{id}
 DELETE /api/catalog/books/{id}
 ```
 
+Gli endpoint books richiedono l'header:
+
+```http
+Authorization: Bearer <token>
+```
+
 ## Sicurezza
 
 Le password non vengono salvate in chiaro nel database.
@@ -258,6 +268,37 @@ Dopo login o registrazione, il frontend salva il token e lo invia nelle chiamate
 ```http
 Authorization: Bearer <token>
 ```
+
+Il backend valida il JWT con un filtro Spring Security dedicato.
+
+Flusso lato backend:
+
+1. `JwtAuthenticationFilter` legge l'header `Authorization`
+2. estrae il token Bearer
+3. `JwtService` valida firma e scadenza del token
+4. dal token viene letto il `subject`, cioe' lo username
+5. `AppUserDetailsService` carica l'utente dal database
+6. il filtro crea un `UsernamePasswordAuthenticationToken`
+7. il `SecurityContext` viene popolato per la request corrente
+8. Spring Security permette l'accesso solo agli endpoint configurati come `authenticated()`
+
+Endpoint pubblici:
+
+```text
+/api/auth/**
+/swagger-ui.html
+/swagger-ui/**
+/v3/api-docs/**
+```
+
+Endpoint protetti:
+
+```text
+/api/catalog/books/**
+anyRequest().authenticated()
+```
+
+Se il token manca, e' scaduto, e' malformato o non e' valido, il backend risponde con `401 Unauthorized` in formato JSON tramite `JwtAuthenticationEntryPoint`.
 
 ## Build
 
@@ -292,12 +333,12 @@ Il progetto è in fase di sviluppo e ha attualmente:
 
 - gestione libri
 - login/register
-- base di autenticazione JWT
+- autenticazione JWT
+- protezione backend degli endpoint libri tramite Spring Security
 - documentazione Swagger/OpenAPI
 
 Prossimi possibili miglioramenti:
 
-- protezione completa degli endpoint libri lato backend
 - refresh token
 - ruoli admin/user
 - gestione prestiti
