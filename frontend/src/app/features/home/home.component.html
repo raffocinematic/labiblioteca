@@ -1,12 +1,14 @@
 <section class="dashboard">
-  <div class="hero">
-    <img
-      class="hero-image"
-      src="/library-dashboard-hero.png"
-      alt="Illustrazione di una postazione moderna per la gestione del catalogo biblioteca"
-    />
+  <div class="landing-summary">
+    <div class="hero-image-panel">
+      <img
+        class="hero-image"
+        src="/library-dashboard-hero.png"
+        alt="Illustrazione di una postazione moderna per la gestione del catalogo biblioteca"
+      />
+    </div>
 
-    <div class="hero-overlay">
+    <div class="summary-panel">
       <p class="eyebrow">Gestionale biblioteca</p>
       <h1>Ciao, {{ authService.currentUsername() || 'utente' }}</h1>
       <p class="subtitle">Riepilogo operativo del catalogo e accesso rapido alle attivita principali.</p>
@@ -14,6 +16,28 @@
       <div class="quick-actions" aria-label="Azioni rapide">
         <a routerLink="/books" class="primary-action">Gestisci libri</a>
         <button type="button" class="secondary-action" (click)="loadBooks()">Aggiorna dati</button>
+      </div>
+
+      <div class="stats-grid">
+        <article class="stat-card">
+          <span class="stat-label">Titoli catalogati</span>
+          <strong>{{ stats().titles }}</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Copie totali</span>
+          <strong>{{ stats().totalCopies }}</strong>
+        </article>
+
+        <article class="stat-card">
+          <span class="stat-label">Copie disponibili</span>
+          <strong>{{ stats().availableCopies }}</strong>
+        </article>
+
+        <article class="stat-card warning">
+          <span class="stat-label">Titoli non disponibili</span>
+          <strong>{{ stats().unavailableTitles }}</strong>
+        </article>
       </div>
     </div>
   </div>
@@ -23,28 +47,6 @@
       {{ error() }}
     </div>
   }
-
-  <div class="stats-grid">
-    <article class="stat-card">
-      <span class="stat-label">Titoli catalogati</span>
-      <strong>{{ stats().titles }}</strong>
-    </article>
-
-    <article class="stat-card">
-      <span class="stat-label">Copie totali</span>
-      <strong>{{ stats().totalCopies }}</strong>
-    </article>
-
-    <article class="stat-card">
-      <span class="stat-label">Copie disponibili</span>
-      <strong>{{ stats().availableCopies }}</strong>
-    </article>
-
-    <article class="stat-card warning">
-      <span class="stat-label">Titoli non disponibili</span>
-      <strong>{{ stats().unavailableTitles }}</strong>
-    </article>
-  </div>
 
   <div class="content-grid">
     <section class="panel">

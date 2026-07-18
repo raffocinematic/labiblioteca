@@ -28,6 +28,9 @@ frontend/.vscode/*
 # Local history backups
 frontend/.git-frontend-backup/
 
+# Local development notes
+DEVELOP.md
+
 # Environment
 .env
 *.local
