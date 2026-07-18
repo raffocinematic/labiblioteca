@@ -39,10 +39,17 @@ export class LoginComponent {
     this.error.set(null);
 
     this.authService.login(this.loginForm.getRawValue()).subscribe({
-      //così dopo la login, arrivi alla landing page.
-     next: () => {
-       this.router.navigateByUrl('/');
-     },
+      //così dopo la login arrivi alla landing page
+      next: () => {
+        //questo reset svuota i valori della form così la psw non resta nello stato del componente Angular. Così
+        // Se nel browser premo F12 non vedo con DevTools la psw in chiaro.
+        this.loginForm.reset({
+          username: '',
+          password: ''
+        });
+
+        this.router.navigateByUrl('/');
+      },
       error: (error: HttpErrorResponse) => {
         const apiError = error.error as ApiError | null;
         this.error.set(apiError?.message ?? 'Login non riuscito.');
