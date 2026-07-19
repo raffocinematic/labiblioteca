@@ -1,7 +1,6 @@
 /*
   Rappresenta un libro completo come arriva dal backend.
   Nel frontend viene usato per tipizzare liste, dettagli e risposte delle API.
-
  */
 
 export interface Book {
@@ -31,4 +30,14 @@ export interface BookSearchFilters {
   author?: string | null;
   isbn?: string | null;
   publicationYear?: number | null;
+}
+
+// Il BE ora non restituisce più Book[] ma un wrapper paginato. Il generic <T> replica lato TS lo stesso concetto
+// del PageResponse<T> Java.
+export interface PageResponse<T> {
+  content: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
 }

@@ -43,11 +43,12 @@ export class HomeComponent implements OnInit {
     this.loading.set(true);
     this.error.set(null);
 
-    this.bookApiService.getBooks().subscribe({
-      next: (books) => {
-        this.books.set(books);
+    this.bookApiService.getBooks(0, 5, 'id,desc').subscribe({
+      next: (response) => {
+        this.books.set(response.content);
         this.loading.set(false);
       },
+
       error: () => {
         this.error.set('Impossibile caricare il riepilogo del catalogo.');
         this.loading.set(false);

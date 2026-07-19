@@ -13,9 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
-
 import java.util.List;
-
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +23,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
+import static org.mockito.ArgumentMatchers.any;
 
 /*
  * Test del layer Controller.
@@ -85,22 +88,34 @@ class BookControllerTest {
      *
      * Il service restituisce due libri e il controller deve rispondere 200
      * con un array JSON di due elementi.
+     *
+     * Test modificato con Pageable: ora la response non è più un array diretto ma un oggetto wrapper.
      */
     @Test
     void getBooksShouldReturnBooks() throws Exception {
         // Arrange
-        when(bookService.findAll()).thenReturn(List.of(bookWithId(1L), bookWithId(2L)));
+        Pageable pageable = PageRequest.of(0, 20, Sort.by("title"));
+        when(bookService.findAll(any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(bookWithId(1L), bookWithId(2L)), pageable, 2));
 
         // Act + Assert
-        mockMvc.perform(get("/api/catalog/books"))
+        mockMvc.perform(get("/api/catalog/books")
+                        .param("page", "0")
+                        .param("size", "20")
+                        .param("sort", "title"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].title").value("Clean Code"));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].id").value(1))
+                .andExpect(jsonPath("$.content[0].title").value("Clean Code"))
+                .andExpect(jsonPath("$.page").value(0))
+                .andExpect(jsonPath("$.size").value(20))
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.totalPages").value(1));
+
 
         // Verifico che il controller abbia delegato al service.
-        verify(bookService).findAll();
+        verify(bookService).findAll(any(Pageable.class));
     }
 
     @Test

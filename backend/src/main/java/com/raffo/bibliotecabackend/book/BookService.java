@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.raffo.bibliotecabackend.common.exception.ConflictException;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -19,8 +21,11 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-    public List<Book> findAll() {
-        return bookRepository.findAll();
+    /**
+     * Pageable contiene page, size, sort. Il repo JpaRepository sa già usarlo e non devi scrivere query custom.
+     */
+    public Page<Book> findAll(Pageable pageable) {
+        return bookRepository.findAll(pageable);
     }
 
     public Book findById(Long id) {

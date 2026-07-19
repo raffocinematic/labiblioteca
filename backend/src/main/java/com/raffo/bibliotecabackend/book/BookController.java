@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.raffo.bibliotecabackend.common.dto.PageResponse;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 
 import java.util.List;
 
@@ -28,11 +32,15 @@ public class BookController {
         this.bookService = bookService;
     }
 
+    // Spring crea automaticamente il Pageable leggendo query param
     @GetMapping
-    public List<BookResponse> getBooks() {
-        return bookService.findAll().stream()
-                .map(BookResponse::from)
-                .toList();
+    public PageResponse<BookResponse> getBooks(
+            @PageableDefault(size = 20, sort = "title", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        return PageResponse.from(
+                bookService.findAll(pageable)
+                        .map(BookResponse::from)
+        );
     }
 
     @GetMapping("/search")

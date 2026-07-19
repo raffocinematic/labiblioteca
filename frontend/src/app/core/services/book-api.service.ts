@@ -1,11 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-
 import { API_BASE_URL } from '../config/api.config';
-
 import { HttpParams } from '@angular/common/http';
-import { Book, BookRequest, BookSearchFilters } from '../models/book.model';
+import { Book, BookRequest, BookSearchFilters, PageResponse } from '../models/book.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +14,16 @@ export class BookApiService {
   constructor(private readonly http: HttpClient) {
     }
 
-   getBooks(): Observable<Book[]> {
-      return this.http.get<Book[]>(this.booksUrl);
-      }
+    // Qui nel service traduciamo parametri frontend in query param HTTP, il componente non deve sapere come si
+    // costruisce HttpParams.
+   getBooks(page = 0, size = 20, sort = 'title'): Observable<PageResponse<Book>> {
+     const params = new HttpParams()
+       .set('page', page)
+       .set('size', size)
+       .set('sort', sort);
+
+     return this.http.get<PageResponse<Book>>(this.booksUrl, { params });
+   }
 
 
   createBook(book: BookRequest): Observable<Book> {

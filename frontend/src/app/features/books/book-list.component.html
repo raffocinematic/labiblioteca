@@ -121,7 +121,10 @@
   <div class="panel-heading list-heading">
     <div>
       <h2>Elenco libri</h2>
-      <p>{{ books().length }} {{ books().length === 1 ? 'libro visualizzato' : 'libri visualizzati' }}</p>
+      <p>
+        {{ totalElements() }}
+        {{ totalElements() === 1 ? 'libro totale' : 'libri totali' }}
+      </p>
     </div>
   </div>
 
@@ -166,6 +169,30 @@
       }
       </tbody>
     </table>
+  </div>
+
+  <div class="pagination">
+    <button
+      type="button"
+      class="secondary"
+      (click)="goToPreviousPage()"
+      [disabled]="loading() || currentPage() === 0"
+    >
+      Precedente
+    </button>
+
+    <span>
+    Pagina {{ currentPage() + 1 }} di {{ totalPages() }}
+  </span>
+
+    <button
+      type="button"
+      class="secondary"
+      (click)="goToNextPage()"
+      [disabled]="loading() || currentPage() >= totalPages() - 1"
+    >
+      Successiva
+    </button>
   </div>
   }
 </section>

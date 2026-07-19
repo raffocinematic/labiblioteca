@@ -8,19 +8,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.util.List;
 import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import org.springframework.data.jpa.domain.Specification;
 import static org.mockito.ArgumentMatchers.any;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 /*
  * Unit test del layer Service.
@@ -65,15 +67,17 @@ class BookServiceTest {
         Book book1 = new Book("Clean Code", "Robert Martin", "ISBN-1", 2008, 3, 2);
         Book book2 = new Book("Effective Java", "Joshua Bloch", "ISBN-2", 2018, 4, 4);
 
-        when(bookRepository.findAll()).thenReturn(List.of(book1, book2));
+        Pageable pageable = PageRequest.of(0, 20, Sort.by("title"));
 
-        // Act: chiamo il metodo reale del service.
-        List<Book> result = bookService.findAll();
+        when(bookRepository.findAll(pageable))
+                .thenReturn(new PageImpl<>(List.of(book1, book2), pageable, 2));
 
-        // Assert: controllo risultato e interazione col repository.
-        assertThat(result).hasSize(2);
-        assertThat(result).containsExactly(book1, book2);
-        verify(bookRepository).findAll();
+        Page<Book> result = bookService.findAll(pageable);
+
+        assertThat(result.getContent()).containsExactly(book1, book2);
+        assertThat(result.getTotalElements()).isEqualTo(2);
+        verify(bookRepository).findAll(pageable);
+
     }
 
     @Test

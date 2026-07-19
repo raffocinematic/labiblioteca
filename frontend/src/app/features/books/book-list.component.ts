@@ -19,6 +19,12 @@ export class BookListComponent implements OnInit {
   protected readonly error = signal<string | null>(null);
   protected readonly editingBookId = signal<number | null>(null);
 
+  protected readonly currentPage = signal(0);
+  protected readonly pageSize = signal(20);
+  protected readonly totalElements = signal(0);
+  protected readonly totalPages = signal(0);
+  protected readonly sort = signal('title');
+
   protected readonly bookForm;
 
   protected readonly searchForm!: FormGroup<{
@@ -56,13 +62,17 @@ export class BookListComponent implements OnInit {
     this.loadBooks();
   }
 
-  protected loadBooks(): void {
+  protected loadBooks(page = this.currentPage()): void {
     this.loading.set(true);
     this.error.set(null);
 
-    this.bookApiService.getBooks().subscribe({
-      next: (books) => {
-        this.books.set(books);
+    this.bookApiService.getBooks(page, this.pageSize(), this.sort()).subscribe({
+      next: (response) => {
+        this.books.set(response.content);
+        this.currentPage.set(response.page);
+        this.pageSize.set(response.size);
+        this.totalElements.set(response.totalElements);
+        this.totalPages.set(response.totalPages);
         this.loading.set(false);
       },
       error: () => {
@@ -71,6 +81,23 @@ export class BookListComponent implements OnInit {
       }
     });
   }
+// La pagina corrente è stato del componente, i bottoni non devon calcolare HTTP, devono solo chiedere al componente
+// di caricare una pagina diversa.
+protected goToPreviousPage(): void {
+  if (this.currentPage() === 0) {
+    return;
+  }
+
+  this.loadBooks(this.currentPage() - 1);
+}
+
+protected goToNextPage(): void {
+  if (this.currentPage() >= this.totalPages() - 1) {
+    return;
+  }
+
+  this.loadBooks(this.currentPage() + 1);
+}
 
   protected saveBook(): void {
     if (this.bookForm.invalid) {
@@ -168,7 +195,7 @@ export class BookListComponent implements OnInit {
       publicationYear: null
     });
 
-    this.loadBooks();
+    this.loadBooks(0);
   }
 
   private getApiErrorMessage(error: unknown, fallbackMessage: string): string {

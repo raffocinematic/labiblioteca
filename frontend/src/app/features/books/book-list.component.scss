@@ -260,10 +260,38 @@ tbody tr:last-child td {
   .actions button {
     flex: 1 1 140px;
   }
+
+.pagination {
+    justify-content: stretch;
+  }
+
+  .pagination button {
+    flex: 1;
+  }
+
+  .pagination span {
+    text-align: center;
+  }
+
 }
 
 .field-error {
   color: #b42318;
   font-size: 0.8125rem;
   font-weight: 500;
+}
+
+.pagination {
+  align-items: center;
+  border-top: 1px solid #e6ebf0;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding: 14px 20px;
+}
+
+.pagination span {
+  color: #52616d;
+  font-size: 0.875rem;
+  font-weight: 600;
 }
