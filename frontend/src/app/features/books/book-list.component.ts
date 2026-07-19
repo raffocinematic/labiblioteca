@@ -1,4 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { Book, BookRequest } from '../../core/models/book.model';
@@ -93,8 +94,8 @@ export class BookListComponent implements OnInit {
         this.loadBooks();
         this.saving.set(false);
       },
-      error: () => {
-        this.error.set('Impossibile salvare il libro.');
+      error: (error: unknown) => {
+        this.error.set(this.getApiErrorMessage(error, 'Impossibile salvare il libro.'));
         this.saving.set(false);
       }
     });
@@ -168,5 +169,17 @@ export class BookListComponent implements OnInit {
     });
 
     this.loadBooks();
+  }
+
+  private getApiErrorMessage(error: unknown, fallbackMessage: string): string {
+    if (error instanceof HttpErrorResponse) {
+      const message = error.error?.message;
+
+      if (typeof message === 'string' && message.trim().length > 0) {
+        return message;
+      }
+    }
+
+    return fallbackMessage;
   }
 }

@@ -32,7 +32,7 @@ public class BookService {
     public Book create(BookRequest request) {
 
         if(bookRepository.existsByIsbn(request.isbn())) {
-            throw new ConflictException("Esiste già un libro con ISBN: " + request.isbn());
+            throw new ConflictException("ISBN gia' presente: esiste gia' un altro libro salvato con ISBN " + request.isbn() + ".");
         }
 
         Book book = new Book(
@@ -52,7 +52,7 @@ public class BookService {
         Book book = findById(id);
 
         if (bookRepository.existsByIsbnAndIdNot(request.isbn(), id)) {
-            throw new ConflictException("Esiste già un altro libro con ISBN: " + request.isbn());
+            throw new ConflictException("ISBN gia' presente: esiste gia' un altro libro salvato con ISBN " + request.isbn() + ".");
         }
 
         book.setTitle(request.title());

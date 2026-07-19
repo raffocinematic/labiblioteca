@@ -156,7 +156,7 @@ class BookServiceTest {
         // Act + Assert: ISBN duplicato significa errore di conflitto dati.
         assertThatThrownBy(() -> bookService.create(request))
                 .isInstanceOf(ConflictException.class)
-                .hasMessageContaining("ISBN");
+                .hasMessage("ISBN gia' presente: esiste gia' un altro libro salvato con ISBN ISBN-1.");
 
         // Il salvataggio non deve essere chiamato se la validazione di dominio fallisce.
         verify(bookRepository).existsByIsbn("ISBN-1");
@@ -222,7 +222,7 @@ class BookServiceTest {
          */
         assertThatThrownBy(() -> bookService.update(1L, request))
                 .isInstanceOf(ConflictException.class)
-                .hasMessageContaining("ISBN");
+                .hasMessage("ISBN gia' presente: esiste gia' un altro libro salvato con ISBN NEW-ISBN.");
 
         verify(bookRepository).findById(1L);
         verify(bookRepository).existsByIsbnAndIdNot("NEW-ISBN", 1L);
