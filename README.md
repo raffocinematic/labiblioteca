@@ -10,6 +10,7 @@ Il progetto è diviso in:
 ## Funzionalità
 
 - CRUD libri
+- Ricerca libri con filtri per titolo, autore, ISBN e anno di pubblicazione
 - Registrazione utente
 - Login utente
 - Password salvate con hash BCrypt
@@ -17,7 +18,7 @@ Il progetto è diviso in:
 - Protezione backend degli endpoint privati con Spring Security
 - Migrazioni database con Liquibase
 - Documentazione API con Swagger/OpenAPI
-- Frontend Angular con pagine Login, Register e gestione libri
+- Frontend Angular con pagine Login, Register, gestione libri e ricerca catalogo
 
 ## Stack Tecnologico
 
@@ -183,6 +184,20 @@ La specifica OpenAPI in formato YAML è disponibile su:
 http://localhost:8080/v3/api-docs.yaml
 ```
 
+La documentazione OpenAPI e' personalizzata tramite la classe:
+
+```text
+backend/src/main/java/com/raffo/bibliotecabackend/config/OpenApiConfig.java
+```
+
+Questa configurazione definisce le informazioni principali mostrate da Swagger UI:
+
+- titolo della documentazione API
+- descrizione del progetto/API
+- versione della documentazione
+
+La personalizzazione viene esposta tramite un bean `OpenAPI`, letto automaticamente da `springdoc-openapi` all'avvio dell'applicazione.
+
 Swagger UI e la specifica OpenAPI sono endpoint pubblici configurati in Spring Security.
 Gli endpoint applicativi privati, come le API dei libri, richiedono invece un JWT valido.
 
@@ -238,6 +253,7 @@ Risposta:
 
 ```text
 GET    /api/catalog/books
+GET    /api/catalog/books/search
 GET    /api/catalog/books/{id}
 POST   /api/catalog/books
 PUT    /api/catalog/books/{id}
@@ -249,6 +265,62 @@ Gli endpoint books richiedono l'header:
 ```http
 Authorization: Bearer <token>
 ```
+
+#### Ricerca libri
+
+L'endpoint di ricerca permette di filtrare il catalogo usando uno o piu' parametri opzionali:
+
+```text
+GET /api/catalog/books/search
+```
+
+Parametri supportati:
+
+- `title`: cerca per titolo, anche parziale e case-insensitive
+- `author`: cerca per autore, anche parziale e case-insensitive
+- `isbn`: cerca per ISBN, anche parziale
+- `publicationYear`: cerca per anno di pubblicazione esatto
+
+Esempi:
+
+```http
+GET /api/catalog/books/search?title=dune
+Authorization: Bearer <token>
+```
+
+```http
+GET /api/catalog/books/search?title=dune&author=herbert
+Authorization: Bearer <token>
+```
+
+```http
+GET /api/catalog/books/search?publicationYear=1965
+Authorization: Bearer <token>
+```
+
+Risposta:
+
+```json
+[
+  {
+    "id": 1,
+    "title": "Dune",
+    "author": "Frank Herbert",
+    "isbn": "1234567890",
+    "publicationYear": 1965,
+    "totalCopies": 3,
+    "availableCopies": 2
+  }
+]
+```
+
+La ricerca restituisce una lista di `BookResponse`. Se nessun libro corrisponde ai filtri, la risposta e' una lista vuota:
+
+```json
+[]
+```
+
+Nel frontend la pagina libri contiene un form dedicato alla ricerca. Il form invia solo i campi compilati e aggiorna la tabella dei risultati.
 
 ## Sicurezza
 
@@ -332,6 +404,7 @@ Il file `.env.example` deve contenere solo valori di esempio.
 Il progetto è in fase di sviluppo e ha attualmente:
 
 - gestione libri
+- ricerca libri con filtri
 - login/register
 - autenticazione JWT
 - protezione backend degli endpoint libri tramite Spring Security
