@@ -9,103 +9,122 @@
 </div>
 }
 
-<section class="panel form-panel">
-  <h2>Ricerca libri</h2>
-
-  <form [formGroup]="searchForm" (ngSubmit)="searchBooks()">
-    <div class="form-grid">
-      <label>
-        Titolo
-        <input type="text" formControlName="title" />
-      </label>
-
-      <label>
-        Autore
-        <input type="text" formControlName="author" />
-      </label>
-
-      <label>
-        ISBN
-        <input type="text" formControlName="isbn" inputmode="numeric" />
-      </label>
-
-      <label>
-        Anno pubblicazione
-        <input type="number" formControlName="publicationYear" min="0" max="9999" />
-      </label>
+<div class="books-layout">
+  <section class="panel form-panel search-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>Ricerca libri</h2>
+        <p>Filtra il catalogo per trovare rapidamente un volume.</p>
+      </div>
     </div>
 
-    <div class="actions">
-      <button type="submit" [disabled]="loading()">Cerca</button>
-      <button type="button" class="secondary" (click)="resetSearch()">Reset</button>
-    </div>
-  </form>
-</section>
+    <form [formGroup]="searchForm" (ngSubmit)="searchBooks()">
+      <div class="form-grid search-grid">
+        <label>
+          Titolo
+          <input type="text" formControlName="title" />
+        </label>
 
-<section class="panel form-panel">
-  <h2>{{ editingBookId() === null ? 'Nuovo libro' : 'Modifica libro' }}</h2>
+        <label>
+          Autore
+          <input type="text" formControlName="author" />
+        </label>
 
-  <form [formGroup]="bookForm" (ngSubmit)="saveBook()">
-    <div class="form-grid">
+        <label>
+          ISBN
+          <input type="text" formControlName="isbn" inputmode="numeric" />
+        </label>
 
-      <label>
-        Titolo
-        <input type="text" formControlName="title" />
-        @if (bookForm.controls.title.touched && bookForm.controls.title.hasError('required')) {
-        <span class="field-error">Il titolo e' obbligatorio.</span>
-        }
-        @if (bookForm.controls.title.touched && bookForm.controls.title.hasError('pattern')) {
-        <span class="field-error">Il titolo puo' contenere solo lettere e spazi.</span>
-        }
-      </label>
+        <label>
+          Anno pubblicazione
+          <input type="number" formControlName="publicationYear" min="0" max="9999" />
+        </label>
+      </div>
 
-      <label>
-        Autore
-        <input type="text" formControlName="author" />
-        @if (bookForm.controls.author.touched && bookForm.controls.author.hasError('required')) {
-        <span class="field-error">L'autore e' obbligatorio.</span>
-        }
-        @if (bookForm.controls.author.touched && bookForm.controls.author.hasError('pattern')) {
-        <span class="field-error">L'autore puo' contenere solo lettere e spazi.</span>
-        }
-      </label>
+      <div class="actions">
+        <button type="submit" [disabled]="loading()">Cerca</button>
+        <button type="button" class="secondary" (click)="resetSearch()">Reset</button>
+      </div>
+    </form>
+  </section>
 
-      <label>
-        ISBN
-        <input type="text" formControlName="isbn" inputmode="numeric" />
-      </label>
-
-      <label>
-        Anno pubblicazione
-        <input type="number" formControlName="publicationYear" min="0" max="9999" />
-      </label>
-
-      <label>
-        Copie totali
-        <input type="number" formControlName="totalCopies" />
-      </label>
-
-      <label>
-        Copie disponibili
-        <input type="number" formControlName="availableCopies" />
-      </label>
+  <section class="panel form-panel editor-panel">
+    <div class="panel-heading">
+      <div>
+        <h2>{{ editingBookId() === null ? 'Nuovo libro' : 'Modifica libro' }}</h2>
+        <p>{{ editingBookId() === null ? 'Inserisci i dati del volume da aggiungere.' : 'Aggiorna i dati del volume selezionato.' }}</p>
+      </div>
     </div>
 
-    <div class="actions">
-      <button type="submit" [disabled]="saving()">
-        {{ editingBookId() === null ? 'Crea libro' : 'Salva modifiche' }}
-      </button>
+    <form [formGroup]="bookForm" (ngSubmit)="saveBook()">
+      <div class="form-grid">
 
-      @if (editingBookId() !== null) {
-      <button type="button" class="secondary" (click)="resetForm()">
-        Annulla
-      </button>
-      }
-    </div>
-  </form>
-</section>
+        <label>
+          Titolo
+          <input type="text" formControlName="title" />
+          @if (bookForm.controls.title.touched && bookForm.controls.title.hasError('required')) {
+          <span class="field-error">Il titolo e' obbligatorio.</span>
+          }
+          @if (bookForm.controls.title.touched && bookForm.controls.title.hasError('pattern')) {
+          <span class="field-error">Il titolo puo' contenere solo lettere e spazi.</span>
+          }
+        </label>
+
+        <label>
+          Autore
+          <input type="text" formControlName="author" />
+          @if (bookForm.controls.author.touched && bookForm.controls.author.hasError('required')) {
+          <span class="field-error">L'autore e' obbligatorio.</span>
+          }
+          @if (bookForm.controls.author.touched && bookForm.controls.author.hasError('pattern')) {
+          <span class="field-error">L'autore puo' contenere solo lettere e spazi.</span>
+          }
+        </label>
+
+        <label>
+          ISBN
+          <input type="text" formControlName="isbn" inputmode="numeric" />
+        </label>
+
+        <label>
+          Anno pubblicazione
+          <input type="number" formControlName="publicationYear" min="0" max="9999" />
+        </label>
+
+        <label>
+          Copie totali
+          <input type="number" formControlName="totalCopies" />
+        </label>
+
+        <label>
+          Copie disponibili
+          <input type="number" formControlName="availableCopies" />
+        </label>
+      </div>
+
+      <div class="actions">
+        <button type="submit" [disabled]="saving()">
+          {{ editingBookId() === null ? 'Crea libro' : 'Salva modifiche' }}
+        </button>
+
+        @if (editingBookId() !== null) {
+        <button type="button" class="secondary" (click)="resetForm()">
+          Annulla
+        </button>
+        }
+      </div>
+    </form>
+  </section>
+</div>
 
 <section class="panel">
+  <div class="panel-heading list-heading">
+    <div>
+      <h2>Elenco libri</h2>
+      <p>{{ books().length }} {{ books().length === 1 ? 'libro visualizzato' : 'libri visualizzati' }}</p>
+    </div>
+  </div>
+
   @if (loading()) {
   <p class="state">Caricamento...</p>
   } @else if (books().length === 0) {
@@ -128,12 +147,12 @@
       <tbody>
       @for (book of books(); track book.id) {
       <tr>
-        <td>{{ book.title }}</td>
+        <td class="book-title">{{ book.title }}</td>
         <td>{{ book.author }}</td>
-        <td>{{ book.isbn }}</td>
+        <td><span class="isbn">{{ book.isbn }}</span></td>
         <td>{{ book.publicationYear ?? '-' }}</td>
-        <td>{{ book.totalCopies }}</td>
-        <td>{{ book.availableCopies }}</td>
+        <td><span class="copies">{{ book.totalCopies }}</span></td>
+        <td><span class="copies available">{{ book.availableCopies }}</span></td>
         <td class="row-actions">
           <button type="button" class="secondary" (click)="editBook(book)">
             Modifica
