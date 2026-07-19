@@ -19,6 +19,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.springframework.data.jpa.domain.Specification;
+import static org.mockito.ArgumentMatchers.any;
+
 /*
  * Unit test del layer Service.
  *
@@ -254,6 +257,18 @@ class BookServiceTest {
         // delete(...) non deve essere chiamato se findById fallisce.
         verify(bookRepository).findById(99L);
         verify(bookRepository, never()).delete(any(Book.class));
+    }
+
+    @Test
+    void searchShouldUseSpecificationWhenFiltersAreProvided() {
+        Book book = new Book("Dune", "Frank Herbert", "12345", 1965, 3, 2);
+
+        when(bookRepository.findAll(any(Specification.class))).thenReturn(List.of(book));
+
+        List<Book> result = bookService.search("dune", "herbert", null, 1965);
+
+        assertThat(result).containsExactly(book);
+        verify(bookRepository).findAll(any(Specification.class));
     }
 
 

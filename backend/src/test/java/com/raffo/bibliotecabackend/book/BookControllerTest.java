@@ -276,4 +276,20 @@ class BookControllerTest {
                 .andExpect(jsonPath("$.validationErrors.isbn").exists())
                 .andExpect(jsonPath("$.validationErrors.publicationYear").exists());
     }
+
+    @Test
+    void searchBooksShouldReturnFilteredBooks() throws Exception {
+        when(bookService.search("dune", "herbert", null, null))
+                .thenReturn(List.of(bookWithId(1L)));
+
+        mockMvc.perform(get("/api/catalog/books/search")
+                        .param("title", "dune")
+                        .param("author", "herbert"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].title").value("Clean Code"));
+
+        verify(bookService).search("dune", "herbert", null, null);
+    }
 }

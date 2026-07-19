@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -30,6 +31,18 @@ public class BookController {
     @GetMapping
     public List<BookResponse> getBooks() {
         return bookService.findAll().stream()
+                .map(BookResponse::from)
+                .toList();
+    }
+
+    @GetMapping("/search")
+    public List<BookResponse> searchBooks(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false) String isbn,
+            @RequestParam(required = false) Integer publicationYear
+    ) {
+        return bookService.search(title, author, isbn, publicationYear).stream()
                 .map(BookResponse::from)
                 .toList();
     }

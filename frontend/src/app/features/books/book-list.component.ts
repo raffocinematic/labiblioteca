@@ -1,12 +1,9 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { Book, BookRequest } from '../../core/models/book.model';
 import { BookApiService } from '../../core/services/book-api.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
-
-/**
- Questa pagina deve gestire lista libri, form, salvataggio, modifica e cancellazione. */
 
 @Component({
   selector: 'app-book-list',
@@ -14,126 +11,162 @@ import { PageHeaderComponent } from '../../shared/components/page-header/page-he
   templateUrl: './book-list.component.html',
   styleUrl: './book-list.component.scss'
 })
-
 export class BookListComponent implements OnInit {
-  //signal serve a gestire lo stato reattivo semplice
   protected readonly books = signal<Book[]>([]);
   protected readonly loading = signal(true);
   protected readonly saving = signal(false);
   protected readonly error = signal<string | null>(null);
-  //il tipo number o null deve stare dentro parentesi angolari di signal!
   protected readonly editingBookId = signal<number | null>(null);
 
   protected readonly bookForm;
 
-  constructor(private readonly bookApiService: BookApiService,
-    //FormBuilder crea un form Angular gestito da Typescript
+  protected readonly searchForm!: FormGroup<{
+    title: FormControl<string | null>;
+    author: FormControl<string | null>;
+    isbn: FormControl<string | null>;
+    publicationYear: FormControl<number | null>;
+  }>;
+
+  constructor(
+    private readonly bookApiService: BookApiService,
     private readonly formBuilder: FormBuilder
-    ) {
-      this.bookForm = this.formBuilder.nonNullable.group({
-        // Validators.required dice che è un campo obbligatorio
-        // Regex messa anche nel FE così l'utente vede subito l'errore, anche se la vera protezione sta ovviamente nel BE
-           title: ['', [Validators.required, Validators.pattern(/^[A-Za-z ]+$/)]],
-           author: ['', [Validators.required, Validators.pattern(/^[A-Za-z ]+$/)]],
-           isbn: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
-           publicationYear: this.formBuilder.control<number | null>(null, [
-             Validators.min(0),
-             Validators.max(9999)
-           ]),
-            totalCopies: [0, [Validators.required, Validators.min(0)]],
-            availableCopies: [0, [Validators.required, Validators.min(0)]]
-          });
-        }
+  ) {
+    this.bookForm = this.formBuilder.nonNullable.group({
+      title: ['', [Validators.required, Validators.pattern(/^[A-Za-z ]+$/)]],
+      author: ['', [Validators.required, Validators.pattern(/^[A-Za-z ]+$/)]],
+      isbn: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
+      publicationYear: this.formBuilder.control<number | null>(null, [
+        Validators.min(0),
+        Validators.max(9999)
+      ]),
+      totalCopies: [0, [Validators.required, Validators.min(0)]],
+      availableCopies: [0, [Validators.required, Validators.min(0)]]
+    });
 
- ngOnInit(): void {
-   this.loadBooks();
-   }
+    this.searchForm = this.formBuilder.group({
+      title: [''],
+      author: [''],
+      isbn: [''],
+      publicationYear: this.formBuilder.control<number | null>(null)
+    });
+  }
 
- protected loadBooks(): void {
-   this.loading.set(true);
-   this.error.set(null);
+  ngOnInit(): void {
+    this.loadBooks();
+  }
 
-   this.bookApiService.getBooks().subscribe({
-     next: (books) => {
-       this.books.set(books);
-       this.loading.set(false);
-       },
-     error: () => {
-       this.error.set('Impossibile caricare i libri.');
-       this.loading.set(false);
-       }
-     });
-   }
- //saveBook() decide se fare create o update.
- protected saveBook(): void {
-     if (this.bookForm.invalid) {
-       this.bookForm.markAllAsTouched();
-       return;
-     }
+  protected loadBooks(): void {
+    this.loading.set(true);
+    this.error.set(null);
 
-     this.saving.set(true);
-     this.error.set(null);
+    this.bookApiService.getBooks().subscribe({
+      next: (books) => {
+        this.books.set(books);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Impossibile caricare i libri.');
+        this.loading.set(false);
+      }
+    });
+  }
 
-     const request: BookRequest = this.bookForm.getRawValue();
-     const editingId = this.editingBookId();
+  protected saveBook(): void {
+    if (this.bookForm.invalid) {
+      this.bookForm.markAllAsTouched();
+      return;
+    }
 
-     const operation = editingId === null
-       ? this.bookApiService.createBook(request)
-       : this.bookApiService.updateBook(editingId, request);
+    this.saving.set(true);
+    this.error.set(null);
 
-     operation.subscribe({
-       next: () => {
-         this.resetForm();
-         this.loadBooks();
-         this.saving.set(false);
-       },
-       error: () => {
-         this.error.set('Impossibile salvare il libro.');
-         this.saving.set(false);
-       }
-     });
-   }
+    const request: BookRequest = this.bookForm.getRawValue();
+    const editingId = this.editingBookId();
 
-   protected editBook(book: Book): void {
-     this.editingBookId.set(book.id);
+    const operation = editingId === null
+      ? this.bookApiService.createBook(request)
+      : this.bookApiService.updateBook(editingId, request);
 
-     this.bookForm.setValue({
-       title: book.title,
-       author: book.author,
-       isbn: book.isbn,
-       publicationYear: book.publicationYear,
-       totalCopies: book.totalCopies,
-       availableCopies: book.availableCopies
-     });
-   }
+    operation.subscribe({
+      next: () => {
+        this.resetForm();
+        this.loadBooks();
+        this.saving.set(false);
+      },
+      error: () => {
+        this.error.set('Impossibile salvare il libro.');
+        this.saving.set(false);
+      }
+    });
+  }
 
-   protected deleteBook(book: Book): void {
-     const confirmed = window.confirm(`Vuoi eliminare "${book.title}"?`);
+  protected editBook(book: Book): void {
+    this.editingBookId.set(book.id);
 
-     if (!confirmed) {
-       return;
-     }
+    this.bookForm.setValue({
+      title: book.title,
+      author: book.author,
+      isbn: book.isbn,
+      publicationYear: book.publicationYear,
+      totalCopies: book.totalCopies,
+      availableCopies: book.availableCopies
+    });
+  }
 
-     this.bookApiService.deleteBook(book.id).subscribe({
-       next: () => {
-         this.loadBooks();
-       },
-       error: () => {
-         this.error.set('Impossibile eliminare il libro.');
-       }
-     });
-   }
+  protected deleteBook(book: Book): void {
+    const confirmed = window.confirm(`Vuoi eliminare "${book.title}"?`);
 
-   protected resetForm(): void {
-     this.editingBookId.set(null);
+    if (!confirmed) {
+      return;
+    }
 
-     this.bookForm.reset({
-       title: '',
-       author: '',
-       isbn: '',
-       publicationYear: null,
-       totalCopies: 0,
-       availableCopies: 0
-     });
-   }
- }
+    this.bookApiService.deleteBook(book.id).subscribe({
+      next: () => {
+        this.loadBooks();
+      },
+      error: () => {
+        this.error.set('Impossibile eliminare il libro.');
+      }
+    });
+  }
+
+  protected resetForm(): void {
+    this.editingBookId.set(null);
+
+    this.bookForm.reset({
+      title: '',
+      author: '',
+      isbn: '',
+      publicationYear: null,
+      totalCopies: 0,
+      availableCopies: 0
+    });
+  }
+
+  protected searchBooks(): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.bookApiService.searchBooks(this.searchForm.getRawValue()).subscribe({
+      next: (books) => {
+        this.books.set(books);
+        this.loading.set(false);
+      },
+      error: () => {
+        this.error.set('Impossibile cercare i libri.');
+        this.loading.set(false);
+      }
+    });
+  }
+
+  protected resetSearch(): void {
+    this.searchForm.reset({
+      title: '',
+      author: '',
+      isbn: '',
+      publicationYear: null
+    });
+
+    this.loadBooks();
+  }
+}

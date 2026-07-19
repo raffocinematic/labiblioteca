@@ -24,3 +24,11 @@ export interface Book {
 // E' uguale a Book, ma senza id perche' l'id non si inserisce nel form:
 // in creazione lo genera il backend, in modifica viene passato nell'URL.
 export type BookRequest = Omit<Book, 'id'>;
+
+// Tipizzare i filtri rende il service leggibile.
+export interface BookSearchFilters {
+  title?: string | null;
+  author?: string | null;
+  isbn?: string | null;
+  publicationYear?: number | null;
+}

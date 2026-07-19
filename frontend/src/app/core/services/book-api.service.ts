@@ -3,7 +3,9 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { API_BASE_URL } from '../config/api.config';
-import { Book, BookRequest } from '../models/book.model';
+
+import { HttpParams } from '@angular/common/http';
+import { Book, BookRequest, BookSearchFilters } from '../models/book.model';
 
 @Injectable({
   providedIn: 'root'
@@ -30,4 +32,26 @@ export class BookApiService {
     deleteBook(id: number): Observable<void> {
       return this.http.delete<void>(`${this.booksUrl}/${id}`);
     }
+
+  searchBooks(filters: BookSearchFilters): Observable<Book[]> {
+    let params = new HttpParams();
+
+    if (filters.title?.trim()) {
+      params = params.set('title', filters.title.trim());
+    }
+
+    if (filters.author?.trim()) {
+      params = params.set('author', filters.author.trim());
+    }
+
+    if (filters.isbn?.trim()) {
+      params = params.set('isbn', filters.isbn.trim());
+    }
+
+    if (filters.publicationYear !== null && filters.publicationYear !== undefined) {
+      params = params.set('publicationYear', filters.publicationYear);
+    }
+
+    return this.http.get<Book[]>(`${this.booksUrl}/search`, { params });
+  }
 }

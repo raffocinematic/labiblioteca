@@ -5,6 +5,7 @@ import com.raffo.bibliotecabackend.common.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.raffo.bibliotecabackend.common.exception.ConflictException;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
@@ -68,5 +69,27 @@ public class BookService {
     public void delete(Long id) {
         Book book = findById(id);
         bookRepository.delete(book);
+    }
+
+    public List<Book> search(String title, String author, String isbn, Integer publicationYear) {
+        Specification<Book> specification = Specification.unrestricted();
+
+        if (title != null && !title.isBlank()) {
+            specification = specification.and(BookSpecifications.titleContains(title.trim()));
+        }
+
+        if (author != null && !author.isBlank()) {
+            specification = specification.and(BookSpecifications.authorContains(author.trim()));
+        }
+
+        if (isbn != null && !isbn.isBlank()) {
+            specification = specification.and(BookSpecifications.isbnContains(isbn.trim()));
+        }
+
+        if (publicationYear != null) {
+            specification = specification.and(BookSpecifications.publicationYearEquals(publicationYear));
+        }
+
+        return bookRepository.findAll(specification);
     }
 }

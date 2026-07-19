@@ -10,6 +10,39 @@
 }
 
 <section class="panel form-panel">
+  <h2>Ricerca libri</h2>
+
+  <form [formGroup]="searchForm" (ngSubmit)="searchBooks()">
+    <div class="form-grid">
+      <label>
+        Titolo
+        <input type="text" formControlName="title" />
+      </label>
+
+      <label>
+        Autore
+        <input type="text" formControlName="author" />
+      </label>
+
+      <label>
+        ISBN
+        <input type="text" formControlName="isbn" inputmode="numeric" />
+      </label>
+
+      <label>
+        Anno pubblicazione
+        <input type="number" formControlName="publicationYear" min="0" max="9999" />
+      </label>
+    </div>
+
+    <div class="actions">
+      <button type="submit" [disabled]="loading()">Cerca</button>
+      <button type="button" class="secondary" (click)="resetSearch()">Reset</button>
+    </div>
+  </form>
+</section>
+
+<section class="panel form-panel">
   <h2>{{ editingBookId() === null ? 'Nuovo libro' : 'Modifica libro' }}</h2>
 
   <form [formGroup]="bookForm" (ngSubmit)="saveBook()">
