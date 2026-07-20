@@ -8,6 +8,7 @@ import com.raffo.bibliotecabackend.common.exception.ConflictException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.raffo.bibliotecabackend.common.exception.BadRequestException;
 
 import java.util.List;
 
@@ -36,6 +37,8 @@ public class BookService {
     @Transactional
     public Book create(BookRequest request) {
 
+        validateCopies(request);
+
         if(bookRepository.existsByIsbn(request.isbn())) {
             throw new ConflictException("ISBN gia' presente: esiste gia' un altro libro salvato con ISBN " + request.isbn() + ".");
         }
@@ -54,6 +57,7 @@ public class BookService {
 
     @Transactional
     public Book update(Long id, BookRequest request) {
+        validateCopies(request);
         Book book = findById(id);
 
         if (bookRepository.existsByIsbnAndIdNot(request.isbn(), id)) {
@@ -96,5 +100,11 @@ public class BookService {
         }
 
         return bookRepository.findAll(specification);
+    }
+
+    private void validateCopies(BookRequest request) {
+        if (request.availableCopies() > request.totalCopies()) {
+            throw new BadRequestException("Le copie disponibili non possono essere maggiori delle copie totali.");
+        }
     }
 }

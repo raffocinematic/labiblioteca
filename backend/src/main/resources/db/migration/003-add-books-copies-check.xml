@@ -5,8 +5,12 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <include file="db/migration/001-create-books-table.xml"/>
-    <include file="db/migration/002-create-app-users-table.xml"/>
-    <include file="db/migration/003-add-books-copies-check.xml"/>
+    <changeSet id="003-add-books-copies-check" author="raffo">
+        <sql>
+            ALTER TABLE books
+            ADD CONSTRAINT ck_books_available_copies_lte_total_copies
+            CHECK (available_copies &lt;= total_copies);
+        </sql>
+    </changeSet>
 
 </databaseChangeLog>

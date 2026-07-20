@@ -16,17 +16,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import io.jsonwebtoken.JwtException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import io.jsonwebtoken.JwtException;
-import org.junit.jupiter.api.Test;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.List;
-
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import static org.mockito.ArgumentMatchers.any;
 
 
 /**
@@ -87,12 +84,13 @@ class BookSecurityTest {
         when(jwtService.extractUsername("valid-token")).thenReturn("raffo");
         when(userDetailsService.loadUserByUsername("raffo")).thenReturn(userDetails);
         when(jwtService.isTokenValid("valid-token", userDetails)).thenReturn(true);
-        when(bookService.findAll()).thenReturn(List.of());
+        when(bookService.findAll(any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of()));
 
         mockMvc.perform(get("/api/catalog/books")
                         .header("Authorization", "Bearer valid-token"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$.content").isArray());
     }
 
     /**

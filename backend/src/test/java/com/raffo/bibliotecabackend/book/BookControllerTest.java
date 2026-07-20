@@ -1,6 +1,7 @@
 package com.raffo.bibliotecabackend.book;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.raffo.bibliotecabackend.auth.JwtAuthenticationFilter;
 import com.raffo.bibliotecabackend.book.dto.BookRequest;
 import com.raffo.bibliotecabackend.common.exception.ConflictException;
 import com.raffo.bibliotecabackend.common.exception.GlobalExceptionHandler;
@@ -69,6 +70,9 @@ class BookControllerTest {
      */
     @MockitoBean
     private BookService bookService;
+
+    @MockitoBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     /*
      * Helper per creare un Book con id.
@@ -156,7 +160,7 @@ class BookControllerTest {
     @Test
     void createBookShouldReturn201AndCreatedBook() throws Exception {
         // Arrange: request rappresenta il JSON che il client mandera' nel body.
-        BookRequest request = new BookRequest("Clean Code", "Robert Martin", "ISBN-1", 2008, 3, 2);
+        BookRequest request = new BookRequest("Clean Code", "Robert Martin", "12345", 2008, 3, 2);
 
         when(bookService.create(request)).thenReturn(bookWithId(1L));
 
@@ -205,9 +209,9 @@ class BookControllerTest {
     @Test
     void updateBookShouldReturnUpdatedBook() throws Exception {
         // Arrange
-        BookRequest request = new BookRequest("Updated title", "Updated author", "ISBN-2", 2024, 5, 4);
+        BookRequest request = new BookRequest("Updated title", "Updated author", "67890", 2024, 5, 4);
 
-        Book updatedBook = new Book("Updated title", "Updated author", "ISBN-2", 2024, 5, 4);
+        Book updatedBook = new Book("Updated title", "Updated author", "67890", 2024, 5, 4);
         ReflectionTestUtils.setField(updatedBook, "id", 1L);
 
         when(bookService.update(1L, request)).thenReturn(updatedBook);
@@ -219,7 +223,7 @@ class BookControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("Updated title"))
-                .andExpect(jsonPath("$.isbn").value("ISBN-2"));
+                .andExpect(jsonPath("$.isbn").value("67890"));
 
         verify(bookService).update(1L, request);
     }
@@ -227,14 +231,14 @@ class BookControllerTest {
     @Test
     void updateBookShouldReturn409WhenIsbnAlreadyExists() throws Exception {
         // Arrange
-        BookRequest request = new BookRequest("Updated title", "Updated author", "ISBN-2", 2024, 5, 4);
+        BookRequest request = new BookRequest("Updated title", "Updated author", "67890", 2024, 5, 4);
 
         /*
          * Simuliamo una regola di business fallita nel service.
          * Il controller non gestisce direttamente l'errore: lo fa GlobalExceptionHandler.
          */
         when(bookService.update(1L, request))
-                .thenThrow(new ConflictException("Esiste gia' un altro libro con ISBN: ISBN-2"));
+                .thenThrow(new ConflictException("Esiste gia' un altro libro con ISBN: 67890"));
 
         // Act + Assert: ConflictException deve diventare HTTP 409.
         mockMvc.perform(put("/api/catalog/books/1")
@@ -242,7 +246,7 @@ class BookControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value(409))
-                .andExpect(jsonPath("$.message").value("Esiste gia' un altro libro con ISBN: ISBN-2"));
+                .andExpect(jsonPath("$.message").value("Esiste gia' un altro libro con ISBN: 67890"));
 
         verify(bookService).update(1L, request);
     }
@@ -290,6 +294,18 @@ class BookControllerTest {
                 .andExpect(jsonPath("$.validationErrors.author").exists())
                 .andExpect(jsonPath("$.validationErrors.isbn").exists())
                 .andExpect(jsonPath("$.validationErrors.publicationYear").exists());
+    }
+
+    @Test
+    void createBookShouldReturn400WhenAvailableCopiesAreGreaterThanTotalCopies() throws Exception {
+        BookRequest request = new BookRequest("Clean Code", "Robert Martin", "12345", 2008, 3, 10);
+
+        mockMvc.perform(post("/api/catalog/books")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.validationErrors.availableCopiesLessThanOrEqualToTotalCopies").exists());
     }
 
     @Test

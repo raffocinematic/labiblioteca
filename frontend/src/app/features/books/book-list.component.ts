@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule,
+  ValidationErrors, Validators } from '@angular/forms';
 
 import { Book, BookRequest } from '../../core/models/book.model';
 import { BookApiService } from '../../core/services/book-api.service';
@@ -48,6 +49,8 @@ export class BookListComponent implements OnInit {
       ]),
       totalCopies: [0, [Validators.required, Validators.min(0)]],
       availableCopies: [0, [Validators.required, Validators.min(0)]]
+    }, {
+      validators: this.availableCopiesCannotExceedTotalCopies
     });
 
     this.searchForm = this.formBuilder.group({
@@ -209,4 +212,18 @@ protected goToNextPage(): void {
 
     return fallbackMessage;
   }
+
+private availableCopiesCannotExceedTotalCopies(control: AbstractControl): ValidationErrors | null {
+  const totalCopies = control.get('totalCopies')?.value;
+  const availableCopies = control.get('availableCopies')?.value;
+
+  if (totalCopies === null || availableCopies === null) {
+    return null;
+  }
+
+  return availableCopies <= totalCopies
+    ? null
+    : { availableCopiesExceedTotalCopies: true };
+}
+
 }

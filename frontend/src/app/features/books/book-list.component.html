@@ -99,11 +99,17 @@
         <label>
           Copie disponibili
           <input type="number" formControlName="availableCopies" />
+          @if (
+          (bookForm.controls.availableCopies.touched || bookForm.controls.totalCopies.touched)
+          && bookForm.hasError('availableCopiesExceedTotalCopies')
+          ) {
+          <span class="field-error">Le copie disponibili non possono superare le copie totali.</span>
+          }
         </label>
       </div>
 
       <div class="actions">
-        <button type="submit" [disabled]="saving()">
+        <button type="submit" [disabled]="saving() || bookForm.invalid">
           {{ editingBookId() === null ? 'Crea libro' : 'Salva modifiche' }}
         </button>
 

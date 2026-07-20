@@ -1,6 +1,7 @@
 package com.raffo.bibliotecabackend.book;
 
 import com.raffo.bibliotecabackend.book.dto.BookRequest;
+import com.raffo.bibliotecabackend.common.exception.BadRequestException;
 import com.raffo.bibliotecabackend.common.exception.ConflictException;
 import com.raffo.bibliotecabackend.common.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
@@ -164,6 +165,25 @@ class BookServiceTest {
 
         // Il salvataggio non deve essere chiamato se la validazione di dominio fallisce.
         verify(bookRepository).existsByIsbn("ISBN-1");
+        verify(bookRepository, never()).save(any(Book.class));
+    }
+
+    @Test
+    void createShouldThrowBadRequestWhenAvailableCopiesAreGreaterThanTotalCopies() {
+        BookRequest request = new BookRequest(
+                "Clean Code",
+                "Robert Martin",
+                "ISBN-1",
+                2008,
+                3,
+                10
+        );
+
+        assertThatThrownBy(() -> bookService.create(request))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("Le copie disponibili non possono essere maggiori delle copie totali.");
+
+        verify(bookRepository, never()).existsByIsbn("ISBN-1");
         verify(bookRepository, never()).save(any(Book.class));
     }
 

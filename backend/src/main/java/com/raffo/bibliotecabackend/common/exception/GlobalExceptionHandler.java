@@ -1,7 +1,6 @@
 package com.raffo.bibliotecabackend.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -43,7 +42,6 @@ public class GlobalExceptionHandler {
 
     /**
      * Serve al frontend che riceve così una risposta JSON chiara quando c'è un ISBN duplicato.
-     *
      */
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ApiError> handleConflict(ConflictException exception, HttpServletRequest request) {
