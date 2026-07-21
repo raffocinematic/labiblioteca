@@ -5,19 +5,19 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public record BookRequest(
         @NotBlank
-        @Pattern(regexp = "^[\\p{L} ]+$", message = "Il titolo puo' contenere solo lettere e spazi")
+        @Size(max = 255)
         String title,
 
         @NotBlank
-        @Pattern(regexp = "^[\\p{L} ]+$", message = "L'autore puo' contenere solo lettere e spazi")
+        @Size(max = 255)
         String author,
 
         @NotBlank
-        @Pattern(regexp = "^\\d+$", message = "L'ISBN puo' contenere solo numeri")
+        @ValidIsbn
         String isbn,
 
         @Min(0)

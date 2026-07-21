@@ -65,8 +65,8 @@
           @if (bookForm.controls.title.touched && bookForm.controls.title.hasError('required')) {
           <span class="field-error">Il titolo e' obbligatorio.</span>
           }
-          @if (bookForm.controls.title.touched && bookForm.controls.title.hasError('pattern')) {
-          <span class="field-error">Il titolo puo' contenere solo lettere e spazi.</span>
+          @if (bookForm.controls.title.touched && bookForm.controls.title.hasError('maxlength')) {
+          <span class="field-error">Il titolo non puo' superare 255 caratteri.</span>
           }
         </label>
 
@@ -76,14 +76,17 @@
           @if (bookForm.controls.author.touched && bookForm.controls.author.hasError('required')) {
           <span class="field-error">L'autore e' obbligatorio.</span>
           }
-          @if (bookForm.controls.author.touched && bookForm.controls.author.hasError('pattern')) {
-          <span class="field-error">L'autore puo' contenere solo lettere e spazi.</span>
+          @if (bookForm.controls.author.touched && bookForm.controls.author.hasError('maxlength')) {
+          <span class="field-error">L'autore non puo' superare 255 caratteri.</span>
           }
         </label>
 
         <label>
           ISBN
           <input type="text" formControlName="isbn" inputmode="numeric" />
+          @if (bookForm.controls.isbn.touched && bookForm.controls.isbn.hasError('invalidIsbn')) {
+          <span class="field-error">Inserisci un ISBN-10 o ISBN-13 valido.</span>
+          }
         </label>
 
         <label>

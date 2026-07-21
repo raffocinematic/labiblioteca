@@ -283,17 +283,28 @@ class BookControllerTest {
     }
 
     @Test
-    void createBookShouldReturn400WhenBookFieldsContainInvalidCharacters() throws Exception {
-        BookRequest request = new BookRequest("Clean Code 123", "Robert Martin!", "ISBN-1", 12345, 3, 2);
+    void createBookShouldAcceptRealisticTitleAndAuthorCharacters() throws Exception {
+        BookRequest request = new BookRequest("1984", "J. R. R. Tolkien", "9780306406157", 1949, 3, 2);
+
+        when(bookService.create(request)).thenReturn(bookWithId(1L));
+
+        mockMvc.perform(post("/api/catalog/books")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated());
+
+        verify(bookService).create(request);
+    }
+
+    @Test
+    void createBookShouldReturn400WhenIsbnIsInvalid() throws Exception {
+        BookRequest request = new BookRequest("Clean Code", "Robert Martin", "12345", 2008, 3, 2);
 
         mockMvc.perform(post("/api/catalog/books")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.validationErrors.title").exists())
-                .andExpect(jsonPath("$.validationErrors.author").exists())
-                .andExpect(jsonPath("$.validationErrors.isbn").exists())
-                .andExpect(jsonPath("$.validationErrors.publicationYear").exists());
+                .andExpect(jsonPath("$.validationErrors.isbn").exists());
     }
 
     @Test

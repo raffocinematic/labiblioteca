@@ -40,9 +40,9 @@ export class BookListComponent implements OnInit {
     private readonly formBuilder: FormBuilder
   ) {
     this.bookForm = this.formBuilder.nonNullable.group({
-      title: ['', [Validators.required, Validators.pattern(/^[A-Za-z ]+$/)]],
-      author: ['', [Validators.required, Validators.pattern(/^[A-Za-z ]+$/)]],
-      isbn: ['', [Validators.required, Validators.pattern(/^\d+$/)]],
+      title: ['', [Validators.required, Validators.maxLength(255)]],
+      author: ['', [Validators.required, Validators.maxLength(255)]],
+      isbn: ['', [Validators.required, this.isbnValidator]],
       publicationYear: this.formBuilder.control<number | null>(null, [
         Validators.min(0),
         Validators.max(9999)
@@ -201,16 +201,39 @@ protected goToNextPage(): void {
     this.loadBooks(0);
   }
 
+/*
+Miglioriamo il messaggio di errore in modo che sia parlante.
+
+Se il BE manda errori di validazione, mostri quelli specifici.
+Se non ci sono validationErrors, continui a mostrare message.
+
+Se non arriva nulla di utile, usi il fallback message 'Impossibile salvare il libro'
+
+Il BE era correto, il problema era l'ordine di priorità nel FE, validationErrors deve venire prima di message.
+*/
   private getApiErrorMessage(error: unknown, fallbackMessage: string): string {
     if (error instanceof HttpErrorResponse) {
-      const message = error.error?.message;
+      const validationErrors = error.error?.validationErrors;
 
-      if (typeof message === 'string' && message.trim().length > 0) {
-        return message;
+      if (validationErrors && typeof validationErrors === 'object') {
+        const messages = Object.values(validationErrors)
+        .filter((value): value is string =>
+        typeof value === 'string' && value.trim().length > 0
+        );
+
+      if (messages.length > 0) {
+        return messages.join(' ');
+        }
       }
-    }
 
-    return fallbackMessage;
+     const message = error.error?.message;
+
+        if (typeof message === 'string' && message.trim().length > 0) {
+          return message;
+        }
+      }
+
+      return fallbackMessage
   }
 
 private availableCopiesCannotExceedTotalCopies(control: AbstractControl): ValidationErrors | null {
@@ -224,6 +247,51 @@ private availableCopiesCannotExceedTotalCopies(control: AbstractControl): Valida
   return availableCopies <= totalCopies
     ? null
     : { availableCopiesExceedTotalCopies: true };
+}
+
+private isbnValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value;
+
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    return null;
+  }
+
+  const isbn = value.replace(/[\s-]/g, '').toUpperCase();
+
+  return this.isValidIsbn10(isbn) || this.isValidIsbn13(isbn)
+    ? null
+    : { invalidIsbn: true };
+}
+
+private isValidIsbn10(isbn: string): boolean {
+  if (!/^\d{9}[\dX]$/.test(isbn)) {
+    return false;
+  }
+
+  let sum = 0;
+
+  for (let i = 0; i < 10; i++) {
+    const char = isbn.charAt(i);
+    const value = char === 'X' ? 10 : Number(char);
+    sum += value * (10 - i);
+  }
+
+  return sum % 11 === 0;
+}
+
+private isValidIsbn13(isbn: string): boolean {
+  if (!/^\d{13}$/.test(isbn)) {
+    return false;
+  }
+
+  let sum = 0;
+
+  for (let i = 0; i < 13; i++) {
+    const value = Number(isbn.charAt(i));
+    sum += i % 2 === 0 ? value : value * 3;
+  }
+
+  return sum % 10 === 0;
 }
 
 }
