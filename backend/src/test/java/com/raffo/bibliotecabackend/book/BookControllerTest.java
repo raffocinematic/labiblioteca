@@ -160,7 +160,7 @@ class BookControllerTest {
     @Test
     void createBookShouldReturn201AndCreatedBook() throws Exception {
         // Arrange: request rappresenta il JSON che il client mandera' nel body.
-        BookRequest request = new BookRequest("Clean Code", "Robert Martin", "12345", 2008, 3, 2);
+        BookRequest request = new BookRequest("Clean Code", "Robert Martin", "9780306406157", BookGenre.SAGGISTICA, 2008, 3, 2);
 
         when(bookService.create(request)).thenReturn(bookWithId(1L));
 
@@ -175,6 +175,7 @@ class BookControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("Clean Code"))
+                .andExpect(jsonPath("$.genre").value("SAGGISTICA"))
                 .andExpect(jsonPath("$.isbn").value("ISBN-1"));
 
         verify(bookService).create(request);
@@ -187,7 +188,7 @@ class BookControllerTest {
          * Questo request viola le annotazioni di validazione in BookRequest:
          * @NotBlank per title/author/isbn e @NotNull per totalCopies/availableCopies.
          */
-        BookRequest request = new BookRequest("", "", "", null, null, null);
+        BookRequest request = new BookRequest("", "", "", null, null, null, null);
 
         /*
          * Act + Assert.
@@ -202,6 +203,7 @@ class BookControllerTest {
                 .andExpect(jsonPath("$.validationErrors.title").exists())
                 .andExpect(jsonPath("$.validationErrors.author").exists())
                 .andExpect(jsonPath("$.validationErrors.isbn").exists())
+                .andExpect(jsonPath("$.validationErrors.genre").exists())
                 .andExpect(jsonPath("$.validationErrors.totalCopies").exists())
                 .andExpect(jsonPath("$.validationErrors.availableCopies").exists());
     }
@@ -209,9 +211,9 @@ class BookControllerTest {
     @Test
     void updateBookShouldReturnUpdatedBook() throws Exception {
         // Arrange
-        BookRequest request = new BookRequest("Updated title", "Updated author", "67890", 2024, 5, 4);
+        BookRequest request = new BookRequest("Updated title", "Updated author", "9780306406157", BookGenre.FANTASY, 2024, 5, 4);
 
-        Book updatedBook = new Book("Updated title", "Updated author", "67890", 2024, 5, 4);
+        Book updatedBook = new Book("Updated title", "Updated author", "9780306406157", BookGenre.FANTASY, 2024, 5, 4);
         ReflectionTestUtils.setField(updatedBook, "id", 1L);
 
         when(bookService.update(1L, request)).thenReturn(updatedBook);
@@ -223,7 +225,8 @@ class BookControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("Updated title"))
-                .andExpect(jsonPath("$.isbn").value("67890"));
+                .andExpect(jsonPath("$.genre").value("FANTASY"))
+                .andExpect(jsonPath("$.isbn").value("9780306406157"));
 
         verify(bookService).update(1L, request);
     }
@@ -231,7 +234,7 @@ class BookControllerTest {
     @Test
     void updateBookShouldReturn409WhenIsbnAlreadyExists() throws Exception {
         // Arrange
-        BookRequest request = new BookRequest("Updated title", "Updated author", "67890", 2024, 5, 4);
+        BookRequest request = new BookRequest("Updated title", "Updated author", "9780306406157", BookGenre.FANTASY, 2024, 5, 4);
 
         /*
          * Simuliamo una regola di business fallita nel service.
@@ -284,7 +287,7 @@ class BookControllerTest {
 
     @Test
     void createBookShouldAcceptRealisticTitleAndAuthorCharacters() throws Exception {
-        BookRequest request = new BookRequest("1984", "J. R. R. Tolkien", "9780306406157", 1949, 3, 2);
+        BookRequest request = new BookRequest("1984", "J. R. R. Tolkien", "9780306406157", BookGenre.CLASSICO, 1949, 3, 2);
 
         when(bookService.create(request)).thenReturn(bookWithId(1L));
 
@@ -298,7 +301,7 @@ class BookControllerTest {
 
     @Test
     void createBookShouldReturn400WhenIsbnIsInvalid() throws Exception {
-        BookRequest request = new BookRequest("Clean Code", "Robert Martin", "12345", 2008, 3, 2);
+        BookRequest request = new BookRequest("Clean Code", "Robert Martin", "12345", BookGenre.SAGGISTICA, 2008, 3, 2);
 
         mockMvc.perform(post("/api/catalog/books")
                         .contentType("application/json")
@@ -309,7 +312,7 @@ class BookControllerTest {
 
     @Test
     void createBookShouldReturn400WhenAvailableCopiesAreGreaterThanTotalCopies() throws Exception {
-        BookRequest request = new BookRequest("Clean Code", "Robert Martin", "12345", 2008, 3, 10);
+        BookRequest request = new BookRequest("Clean Code", "Robert Martin", "12345", BookGenre.SAGGISTICA, 2008, 3, 10);
 
         mockMvc.perform(post("/api/catalog/books")
                         .contentType("application/json")
@@ -321,7 +324,7 @@ class BookControllerTest {
 
     @Test
     void searchBooksShouldReturnFilteredBooks() throws Exception {
-        when(bookService.search("dune", "herbert", null, null))
+        when(bookService.search("dune", "herbert", null, null, null))
                 .thenReturn(List.of(bookWithId(1L)));
 
         mockMvc.perform(get("/api/catalog/books/search")
@@ -332,6 +335,6 @@ class BookControllerTest {
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].title").value("Clean Code"));
 
-        verify(bookService).search("dune", "herbert", null, null);
+        verify(bookService).search("dune", "herbert", null, null, null);
     }
 }

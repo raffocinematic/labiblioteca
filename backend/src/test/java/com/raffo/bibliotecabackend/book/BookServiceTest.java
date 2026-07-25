@@ -116,8 +116,8 @@ class BookServiceTest {
                 "Clean Code",
                 "Robert Martin",
                 "ISBN-1",
+                BookGenre.SAGGISTICA,
                 2008,
-
                 3,
                 2
         );
@@ -127,7 +127,7 @@ class BookServiceTest {
          * thenAnswer restituisce al test lo stesso Book passato a save(...),
          * come se il repository lo avesse salvato.
          */
-        when(bookRepository.existsByIsbn("ISBN-1")).thenReturn(false);
+        when(bookRepository.existsByIsbn("ISBN1")).thenReturn(false);
         when(bookRepository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // Act
@@ -136,12 +136,13 @@ class BookServiceTest {
         // Assert: controllo che il Book creato contenga i dati del request.
         assertThat(result.getTitle()).isEqualTo("Clean Code");
         assertThat(result.getAuthor()).isEqualTo("Robert Martin");
-        assertThat(result.getIsbn()).isEqualTo("ISBN-1");
+        assertThat(result.getIsbn()).isEqualTo("ISBN1");
+        assertThat(result.getGenre()).isEqualTo(BookGenre.SAGGISTICA);
         assertThat(result.getPublicationYear()).isEqualTo(2008);
         assertThat(result.getTotalCopies()).isEqualTo(3);
         assertThat(result.getAvailableCopies()).isEqualTo(2);
 
-        verify(bookRepository).existsByIsbn("ISBN-1");
+        verify(bookRepository).existsByIsbn("ISBN1");
         verify(bookRepository).save(any(Book.class));
     }
 
@@ -152,20 +153,21 @@ class BookServiceTest {
                 "Clean Code",
                 "Robert Martin",
                 "ISBN-1",
+                BookGenre.SAGGISTICA,
                 2008,
                 3,
                 2
         );
 
-        when(bookRepository.existsByIsbn("ISBN-1")).thenReturn(true);
+        when(bookRepository.existsByIsbn("ISBN1")).thenReturn(true);
 
         // Act + Assert: ISBN duplicato significa errore di conflitto dati.
         assertThatThrownBy(() -> bookService.create(request))
                 .isInstanceOf(ConflictException.class)
-                .hasMessage("ISBN gia' presente: esiste gia' un altro libro salvato con ISBN ISBN-1.");
+                .hasMessage("ISBN gia' presente: esiste gia' un altro libro salvato con ISBN ISBN1.");
 
         // Il salvataggio non deve essere chiamato se la validazione di dominio fallisce.
-        verify(bookRepository).existsByIsbn("ISBN-1");
+        verify(bookRepository).existsByIsbn("ISBN1");
         verify(bookRepository, never()).save(any(Book.class));
     }
 
@@ -175,6 +177,7 @@ class BookServiceTest {
                 "Clean Code",
                 "Robert Martin",
                 "ISBN-1",
+                BookGenre.SAGGISTICA,
                 2008,
                 3,
                 10
@@ -197,13 +200,14 @@ class BookServiceTest {
                 "New title",
                 "New author",
                 "NEW-ISBN",
+                BookGenre.FANTASY,
                 2024,
                 5,
                 4
         );
 
         when(bookRepository.findById(1L)).thenReturn(Optional.of(existingBook));
-        when(bookRepository.existsByIsbnAndIdNot("NEW-ISBN", 1L)).thenReturn(false);
+        when(bookRepository.existsByIsbnAndIdNot("NEWISBN", 1L)).thenReturn(false);
         when(bookRepository.save(existingBook)).thenReturn(existingBook);
 
         // Act
@@ -212,13 +216,14 @@ class BookServiceTest {
         // Assert: il service deve copiare i nuovi dati dentro l'entita' esistente.
         assertThat(result.getTitle()).isEqualTo("New title");
         assertThat(result.getAuthor()).isEqualTo("New author");
-        assertThat(result.getIsbn()).isEqualTo("NEW-ISBN");
+        assertThat(result.getIsbn()).isEqualTo("NEWISBN");
+        assertThat(result.getGenre()).isEqualTo(BookGenre.FANTASY);
         assertThat(result.getPublicationYear()).isEqualTo(2024);
         assertThat(result.getTotalCopies()).isEqualTo(5);
         assertThat(result.getAvailableCopies()).isEqualTo(4);
 
         verify(bookRepository).findById(1L);
-        verify(bookRepository).existsByIsbnAndIdNot("NEW-ISBN", 1L);
+        verify(bookRepository).existsByIsbnAndIdNot("NEWISBN", 1L);
         verify(bookRepository).save(existingBook);
     }
 
@@ -231,13 +236,14 @@ class BookServiceTest {
                 "New title",
                 "New author",
                 "NEW-ISBN",
+                BookGenre.FANTASY,
                 2024,
                 5,
                 4
         );
 
         when(bookRepository.findById(1L)).thenReturn(Optional.of(existingBook));
-        when(bookRepository.existsByIsbnAndIdNot("NEW-ISBN", 1L)).thenReturn(true);
+        when(bookRepository.existsByIsbnAndIdNot("NEWISBN", 1L)).thenReturn(true);
 
         /*
          * Act + Assert.
@@ -247,10 +253,10 @@ class BookServiceTest {
          */
         assertThatThrownBy(() -> bookService.update(1L, request))
                 .isInstanceOf(ConflictException.class)
-                .hasMessage("ISBN gia' presente: esiste gia' un altro libro salvato con ISBN NEW-ISBN.");
+                .hasMessage("ISBN gia' presente: esiste gia' un altro libro salvato con ISBN NEWISBN.");
 
         verify(bookRepository).findById(1L);
-        verify(bookRepository).existsByIsbnAndIdNot("NEW-ISBN", 1L);
+        verify(bookRepository).existsByIsbnAndIdNot("NEWISBN", 1L);
         verify(bookRepository, never()).save(any(Book.class));
     }
 
