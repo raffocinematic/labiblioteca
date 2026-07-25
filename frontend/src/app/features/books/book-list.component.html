@@ -170,6 +170,7 @@
         <th>Titolo</th>
         <th>Autore</th>
         <th>ISBN</th>
+        <th>Genere</th>
         <th>Anno</th>
         <th>Copie</th>
         <th>Disponibili</th>
@@ -183,9 +184,10 @@
         <td class="book-title">{{ book.title }}</td>
         <td>{{ book.author }}</td>
         <td><span class="isbn">{{ book.isbn }}</span></td>
+        <td>{{ book.genre }}</td>
         <td>{{ book.publicationYear ?? '-' }}</td>
-        <td><span class="copies">{{ book.totalCopies }}</span></td>
-        <td><span class="copies available">{{ book.availableCopies }}</span></td>
+        <td>{{ book.totalCopies }}</td>
+        <td>{{ book.availableCopies }}</td>
         <td class="row-actions">
           <button type="button" class="secondary" (click)="editBook(book)">
             Modifica
