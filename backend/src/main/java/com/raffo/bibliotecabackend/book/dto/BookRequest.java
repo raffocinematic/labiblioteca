@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Size;
+import com.raffo.bibliotecabackend.book.BookGenre;
 
 public record BookRequest(
         @NotBlank
@@ -19,6 +20,9 @@ public record BookRequest(
         @NotBlank
         @ValidIsbn
         String isbn,
+
+        @NotNull
+        BookGenre genre,
 
         @Min(0)
         @Max(9999)

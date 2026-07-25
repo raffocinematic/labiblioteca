@@ -6,6 +6,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 @Entity
 @Table(name = "books")
@@ -24,6 +26,10 @@ public class Book {
     @Column(nullable = false, unique = true, length = 32)
     private String isbn;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private BookGenre genre;
+
     private Integer publicationYear;
 
     @Column(nullable = false)
@@ -35,10 +41,11 @@ public class Book {
     protected Book() {
     }
 
-    public Book(String title, String author, String isbn, Integer publicationYear, Integer totalCopies, Integer availableCopies) {
+    public Book(String title, String author, String isbn, BookGenre genre, Integer publicationYear, Integer totalCopies, Integer availableCopies) {
         this.title = title;
         this.author = author;
         this.isbn = isbn;
+        this.genre = genre;
         this.publicationYear = publicationYear;
         this.totalCopies = totalCopies;
         this.availableCopies = availableCopies;
@@ -94,5 +101,13 @@ public class Book {
 
     public void setAvailableCopies(Integer availableCopies) {
         this.availableCopies = availableCopies;
+    }
+
+    public BookGenre getGenre() {
+        return genre;
+    }
+
+    public void setGenre(BookGenre genre) {
+        this.genre = genre;
     }
 }

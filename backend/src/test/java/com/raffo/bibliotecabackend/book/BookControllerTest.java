@@ -82,7 +82,7 @@ class BookControllerTest {
      * quindi usiamo ReflectionTestUtils solo in ambiente di test.
      */
     private Book bookWithId(Long id) {
-        Book book = new Book("Clean Code", "Robert Martin", "ISBN-1", 2008, 3, 2);
+        Book book = new Book("Clean Code", "Robert Martin", "ISBN-1", BookGenre.SAGGISTICA,2008, 3, 2);
         ReflectionTestUtils.setField(book, "id", id);
         return book;
     }

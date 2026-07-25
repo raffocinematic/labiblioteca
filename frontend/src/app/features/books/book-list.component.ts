@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule,
   ValidationErrors, Validators } from '@angular/forms';
 
-import { Book, BookRequest } from '../../core/models/book.model';
+import { Book, BookGenre, BookRequest } from '../../core/models/book.model';
 import { BookApiService } from '../../core/services/book-api.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
@@ -32,8 +32,27 @@ export class BookListComponent implements OnInit {
     title: FormControl<string | null>;
     author: FormControl<string | null>;
     isbn: FormControl<string | null>;
+    genre: FormControl<BookGenre | null>;
     publicationYear: FormControl<number | null>;
   }>;
+
+protected readonly genres: BookGenre[] = [
+  'NARRATIVA',
+  'GIALLO',
+  'FANTASY',
+  'FANTASCIENZA',
+  'STORICO',
+  'SAGGISTICA',
+  'BIOGRAFIA',
+  'POESIA',
+  'TEATRO',
+  'HORROR',
+  'AVVENTURA',
+  'BAMBINI_RAGAZZI',
+  'CLASSICO',
+  'TECNICO',
+  'ALTRO'
+];
 
   constructor(
     private readonly bookApiService: BookApiService,
@@ -43,6 +62,7 @@ export class BookListComponent implements OnInit {
       title: ['', [Validators.required, Validators.maxLength(255)]],
       author: ['', [Validators.required, Validators.maxLength(255)]],
       isbn: ['', [Validators.required, this.isbnValidator]],
+      genre: ['ALTRO' as BookGenre, [Validators.required]],
       publicationYear: this.formBuilder.control<number | null>(null, [
         Validators.min(0),
         Validators.max(9999)
@@ -57,6 +77,7 @@ export class BookListComponent implements OnInit {
       title: [''],
       author: [''],
       isbn: [''],
+      genre: this.formBuilder.control<BookGenre | null>(null),
       publicationYear: this.formBuilder.control<number | null>(null)
     });
   }
@@ -138,6 +159,7 @@ protected goToNextPage(): void {
       title: book.title,
       author: book.author,
       isbn: book.isbn,
+      genre: book.genre,
       publicationYear: book.publicationYear,
       totalCopies: book.totalCopies,
       availableCopies: book.availableCopies
@@ -168,6 +190,7 @@ protected goToNextPage(): void {
       title: '',
       author: '',
       isbn: '',
+      genre: 'ALTRO',
       publicationYear: null,
       totalCopies: 0,
       availableCopies: 0
@@ -195,6 +218,7 @@ protected goToNextPage(): void {
       title: '',
       author: '',
       isbn: '',
+      genre: null,
       publicationYear: null
     });
 

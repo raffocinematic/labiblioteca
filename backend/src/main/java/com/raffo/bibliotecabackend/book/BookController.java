@@ -18,6 +18,7 @@ import com.raffo.bibliotecabackend.common.dto.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import com.raffo.bibliotecabackend.book.BookGenre;
 
 import java.util.List;
 
@@ -48,9 +49,10 @@ public class BookController {
             @RequestParam(required = false) String title,
             @RequestParam(required = false) String author,
             @RequestParam(required = false) String isbn,
+            @RequestParam(required = false) BookGenre genre,
             @RequestParam(required = false) Integer publicationYear
     ) {
-        return bookService.search(title, author, isbn, publicationYear).stream()
+        return bookService.search(title, author, isbn, genre, publicationYear).stream()
                 .map(BookResponse::from)
                 .toList();
     }

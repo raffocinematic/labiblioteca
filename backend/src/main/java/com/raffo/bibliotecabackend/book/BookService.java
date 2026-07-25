@@ -49,6 +49,7 @@ public class BookService {
                 request.title(),
                 request.author(),
                 isbn,
+                request.genre(),
                 request.publicationYear(),
                 request.totalCopies(),
                 request.availableCopies()
@@ -86,6 +87,7 @@ public class BookService {
         book.setTitle(request.title());
         book.setAuthor(request.author());
         book.setIsbn(isbn);
+        book.setGenre(request.genre());
         book.setPublicationYear(request.publicationYear());
         book.setTotalCopies(request.totalCopies());
         book.setAvailableCopies(request.availableCopies());
@@ -99,7 +101,7 @@ public class BookService {
         bookRepository.delete(book);
     }
 
-    public List<Book> search(String title, String author, String isbn, Integer publicationYear) {
+    public List<Book> search(String title, String author, String isbn, BookGenre genre, Integer publicationYear) {
         Specification<Book> specification = Specification.unrestricted();
 
         if (title != null && !title.isBlank()) {
@@ -112,6 +114,10 @@ public class BookService {
 
         if (isbn != null && !isbn.isBlank()) {
             specification = specification.and(BookSpecifications.isbnContains(IsbnUtils.normalize(isbn)));
+        }
+
+        if (genre != null) {
+            specification = specification.and(BookSpecifications.genreEquals(genre));
         }
 
         if (publicationYear != null) {

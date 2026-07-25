@@ -65,8 +65,8 @@ class BookServiceTest {
     @Test
     void findAllShouldReturnAllBooks() {
         // Arrange: preparo i dati finti e istruisco il repository mock.
-        Book book1 = new Book("Clean Code", "Robert Martin", "ISBN-1", 2008, 3, 2);
-        Book book2 = new Book("Effective Java", "Joshua Bloch", "ISBN-2", 2018, 4, 4);
+        Book book1 = new Book("Clean Code", "Robert Martin", "ISBN-1", BookGenre.SAGGISTICA, 2008, 3, 2);
+        Book book2 = new Book("Effective Java", "Joshua Bloch", "ISBN-2", BookGenre.SAGGISTICA, 2018, 4, 4);
 
         Pageable pageable = PageRequest.of(0, 20, Sort.by("title"));
 
@@ -84,7 +84,7 @@ class BookServiceTest {
     @Test
     void findByIdShouldReturnBookWhenExists() {
         // Arrange
-        Book book = new Book("Clean Code", "Robert Martin", "ISBN-1", 2008, 3, 2);
+        Book book = new Book("Clean Code", "Robert Martin", "ISBN-1", BookGenre.SAGGISTICA,2008, 3, 2);
 
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
@@ -117,6 +117,7 @@ class BookServiceTest {
                 "Robert Martin",
                 "ISBN-1",
                 2008,
+
                 3,
                 2
         );
@@ -190,7 +191,7 @@ class BookServiceTest {
     @Test
     void updateShouldModifyBookWhenBookExistsAndIsbnIsAvailable() {
         // Arrange: existingBook simula l'entita' gia' presente nel database.
-        Book existingBook = new Book("Old title", "Old author", "OLD-ISBN", 2000, 1, 1);
+        Book existingBook = new Book("Old title", "Old author", "OLD-ISBN", BookGenre.SAGGISTICA,2000, 1, 1);
 
         BookRequest request = new BookRequest(
                 "New title",
@@ -224,7 +225,7 @@ class BookServiceTest {
     @Test
     void updateShouldThrowConflictWhenIsbnBelongsToAnotherBook() {
         // Arrange
-        Book existingBook = new Book("Old title", "Old author", "OLD-ISBN", 2000, 1, 1);
+        Book existingBook = new Book("Old title", "Old author", "OLD-ISBN", BookGenre.SAGGISTICA,2000, 1, 1);
 
         BookRequest request = new BookRequest(
                 "New title",
@@ -256,7 +257,7 @@ class BookServiceTest {
     @Test
     void deleteShouldRemoveBookWhenExists() {
         // Arrange: prima di eliminare, il service deve trovare il libro.
-        Book book = new Book("Clean Code", "Robert Martin", "ISBN-1", 2008, 3, 2);
+        Book book = new Book("Clean Code", "Robert Martin", "ISBN-1", BookGenre.SAGGISTICA,2008, 3, 2);
 
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
 
@@ -285,11 +286,11 @@ class BookServiceTest {
 
     @Test
     void searchShouldUseSpecificationWhenFiltersAreProvided() {
-        Book book = new Book("Dune", "Frank Herbert", "12345", 1965, 3, 2);
+        Book book = new Book("Dune", "Frank Herbert", "12345", BookGenre.SAGGISTICA,1965, 3, 2);
 
         when(bookRepository.findAll(any(Specification.class))).thenReturn(List.of(book));
 
-        List<Book> result = bookService.search("dune", "herbert", null, 1965);
+        List<Book> result = bookService.search("dune", "herbert", null, BookGenre.SAGGISTICA,1965);
 
         assertThat(result).containsExactly(book);
         verify(bookRepository).findAll(any(Specification.class));

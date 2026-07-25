@@ -38,4 +38,9 @@ public final class BookSpecifications {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("publicationYear"), publicationYear);
     }
+
+    public static Specification<Book> genreEquals(BookGenre genre) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("genre"), genre);
+    }
 }

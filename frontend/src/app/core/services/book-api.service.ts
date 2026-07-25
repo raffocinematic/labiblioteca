@@ -53,6 +53,10 @@ export class BookApiService {
       params = params.set('isbn', filters.isbn.trim());
     }
 
+    if (filters.genre) {
+      params = params.set('genre', filters.genre);
+    }
+
     if (filters.publicationYear !== null && filters.publicationYear !== undefined) {
       params = params.set('publicationYear', filters.publicationYear);
     }

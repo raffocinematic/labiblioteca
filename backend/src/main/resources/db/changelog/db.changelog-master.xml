@@ -8,5 +8,6 @@
     <include file="db/migration/001-create-books-table.xml"/>
     <include file="db/migration/002-create-app-users-table.xml"/>
     <include file="db/migration/003-add-books-copies-check.xml"/>
+    <include file="db/migration/004-add-books-genre.xml"/>
 
 </databaseChangeLog>

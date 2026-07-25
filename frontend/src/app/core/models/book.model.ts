@@ -10,6 +10,7 @@ export interface Book {
   title: string;
   author: string;
   isbn: string;
+  genre: BookGenre;
   // Puo' essere null quando l'anno di pubblicazione non e' disponibile.
   publicationYear: number | null;
   // Numero totale di copie registrate in biblioteca.
@@ -29,6 +30,7 @@ export interface BookSearchFilters {
   title?: string | null;
   author?: string | null;
   isbn?: string | null;
+  genre?: BookGenre | null;
   publicationYear?: number | null;
 }
 
@@ -41,3 +43,20 @@ export interface PageResponse<T> {
   totalElements: number;
   totalPages: number;
 }
+
+export type BookGenre =
+  | 'NARRATIVA'
+  | 'GIALLO'
+  | 'FANTASY'
+  | 'FANTASCIENZA'
+  | 'STORICO'
+  | 'SAGGISTICA'
+  | 'BIOGRAFIA'
+  | 'POESIA'
+  | 'TEATRO'
+  | 'HORROR'
+  | 'AVVENTURA'
+  | 'BAMBINI_RAGAZZI'
+  | 'CLASSICO'
+  | 'TECNICO'
+  | 'ALTRO';

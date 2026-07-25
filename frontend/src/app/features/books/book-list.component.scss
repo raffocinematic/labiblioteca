@@ -66,7 +66,8 @@ label {
   gap: 6px;
 }
 
-input {
+input,
+select {
   border: 1px solid #cbd5df;
   border-radius: 6px;
   color: #1f2933;
@@ -76,7 +77,8 @@ input {
   width: 100%;
 }
 
-input:focus {
+input:focus,
+select:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
   outline: none;

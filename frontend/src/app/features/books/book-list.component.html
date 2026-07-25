@@ -36,6 +36,15 @@
         </label>
 
         <label>
+          Genere
+          <select formControlName="genre">
+            @for (genre of genres; track genre) {
+            <option [value]="genre">{{ genre }}</option>
+            }
+          </select>
+        </label>
+
+        <label>
           Anno pubblicazione
           <input type="number" formControlName="publicationYear" min="0" max="9999" />
         </label>
@@ -86,6 +95,18 @@
           <input type="text" formControlName="isbn" inputmode="numeric" />
           @if (bookForm.controls.isbn.touched && bookForm.controls.isbn.hasError('invalidIsbn')) {
           <span class="field-error">Inserisci un ISBN-10 o ISBN-13 valido.</span>
+          }
+        </label>
+
+        <label>
+          Genere
+          <select formControlName="genre">
+            @for (genre of genres; track genre) {
+            <option [value]="genre">{{ genre }}</option>
+            }
+          </select>
+          @if (bookForm.controls.genre.touched && bookForm.controls.genre.hasError('required')) {
+          <span class="field-error">Il genere e' obbligatorio.</span>
           }
         </label>
 
