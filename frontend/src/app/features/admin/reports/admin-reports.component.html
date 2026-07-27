@@ -1,0 +1,57 @@
+<app-page-header
+  title="Report"
+  description="Indicatori sintetici su catalogo e utenti."
+/>
+
+@if (error()) {
+  <div class="alert">
+    {{ error() }}
+  </div>
+}
+
+@if (loading()) {
+  <section class="panel">
+    <p class="state">Caricamento...</p>
+  </section>
+} @else if (summary() === null) {
+  <section class="panel">
+    <p class="state">Nessun report disponibile.</p>
+  </section>
+} @else {
+  <section class="metrics-grid">
+    <article class="metric-card">
+      <span>Libri</span>
+      <strong>{{ summary()!.totalBooks }}</strong>
+    </article>
+
+    <article class="metric-card">
+      <span>Copie totali</span>
+      <strong>{{ summary()!.totalCopies }}</strong>
+    </article>
+
+    <article class="metric-card">
+      <span>Disponibili</span>
+      <strong>{{ summary()!.availableCopies }}</strong>
+    </article>
+
+    <article class="metric-card">
+      <span>In prestito</span>
+      <strong>{{ summary()!.borrowedCopies }}</strong>
+    </article>
+
+    <article class="metric-card">
+      <span>Utenti</span>
+      <strong>{{ summary()!.totalUsers }}</strong>
+    </article>
+
+    <article class="metric-card">
+      <span>Admin</span>
+      <strong>{{ summary()!.adminUsers }}</strong>
+    </article>
+
+    <article class="metric-card">
+      <span>User</span>
+      <strong>{{ summary()!.normalUsers }}</strong>
+    </article>
+  </section>
+}

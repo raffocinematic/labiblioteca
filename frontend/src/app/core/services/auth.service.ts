@@ -15,6 +15,7 @@ export class AuthService {
   private readonly roleKey = 'biblioteca_role';
 
   readonly currentUsername = signal<string | null>(localStorage.getItem(this.usernameKey));
+  readonly currentRole = signal<string | null>(localStorage.getItem(this.roleKey));
 
   constructor(private readonly http: HttpClient) {
   }
@@ -43,11 +44,16 @@ export class AuthService {
     return this.getToken() !== null;
   }
 
+isAdmin(): boolean {
+  return this.currentRole() === 'ROLE_ADMIN';
+}
+
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.usernameKey);
     localStorage.removeItem(this.roleKey);
     this.currentUsername.set(null);
+    this.currentRole.set(null);
   }
 
   private saveSession(response: AuthResponse): void {
@@ -55,5 +61,6 @@ export class AuthService {
     localStorage.setItem(this.usernameKey, response.username);
     localStorage.setItem(this.roleKey, response.role);
     this.currentUsername.set(response.username);
+    this.currentRole.set(response.role);
   }
 }

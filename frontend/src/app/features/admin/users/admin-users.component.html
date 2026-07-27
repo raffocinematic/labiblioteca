@@ -1,0 +1,54 @@
+<app-page-header
+  title="Utenti"
+  description="Gestione ruoli e account della biblioteca."
+/>
+
+@if (error()) {
+<div class="alert">
+  {{ error() }}
+</div>
+}
+
+<section class="panel">
+  @if (loading()) {
+  <p class="state">Caricamento...</p>
+  } @else if (users().length === 0) {
+  <p class="state">Nessun utente presente.</p>
+  } @else {
+  <div class="table-wrap">
+    <table>
+      <thead>
+      <tr>
+        <th>Username</th>
+        <th>Ruolo</th>
+        <th>Creato il</th>
+        <th>Azioni</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      @for (user of users(); track user.id) {
+      <tr>
+        <td class="username">{{ user.username }}</td>
+        <td>{{ user.role }}</td>
+        <td>{{ user.createdAt }}</td>
+        <td class="row-actions">
+          <button type="button" class="secondary" (click)="changeRole(user, 'ROLE_USER')">
+            User
+          </button>
+
+          <button type="button" class="secondary" (click)="changeRole(user, 'ROLE_ADMIN')">
+            Admin
+          </button>
+
+          <button type="button" class="danger" (click)="deleteUser(user)">
+            Elimina
+          </button>
+        </td>
+      </tr>
+      }
+      </tbody>
+    </table>
+  </div>
+  }
+</section>

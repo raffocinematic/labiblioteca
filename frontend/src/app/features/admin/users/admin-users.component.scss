@@ -1,0 +1,74 @@
+.panel {
+  background: #ffffff;
+  border: 1px solid #dfe5eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(31, 41, 51, 0.06);
+  overflow: hidden;
+}
+
+.alert {
+  background: #fff1f0;
+  border: 1px solid #ffccc7;
+  border-radius: 6px;
+  color: #b42318;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+}
+
+.state {
+  color: #52616d;
+  margin: 0;
+  padding: 24px 20px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  min-width: 720px;
+  width: 100%;
+}
+
+th,
+td {
+  border-bottom: 1px solid #e6ebf0;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+th {
+  background: #fbfcfd;
+  color: #52616d;
+  font-size: 0.8125rem;
+}
+
+.username {
+  font-weight: 700;
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+button {
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 38px;
+  padding: 9px 12px;
+}
+
+button.secondary {
+  background: #e6ebf0;
+  color: #1f2933;
+}
+
+button.danger {
+  background: #b42318;
+  color: #ffffff;
+}

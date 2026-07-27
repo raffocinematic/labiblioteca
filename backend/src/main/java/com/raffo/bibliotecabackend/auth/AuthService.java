@@ -40,7 +40,7 @@ public class AuthService {
         String passwordHash = passwordEncoder.encode(request.password());
         AppUser user = userRepository.save(new AppUser(request.username(), passwordHash));
 
-        return new AuthResponse(jwtService.generateToken(user), user.getUsername(), user.getRole());
+        return new AuthResponse(jwtService.generateToken(user), user.getUsername(), user.getRole().name());
 
     }
 
@@ -52,6 +52,6 @@ public class AuthService {
             throw new UnauthorizedException("Credenziali non valide.");
         }
 
-        return new AuthResponse(jwtService.generateToken(user), user.getUsername(), user.getRole());
+        return new AuthResponse(jwtService.generateToken(user), user.getUsername(), user.getRole().name());
     }
 }

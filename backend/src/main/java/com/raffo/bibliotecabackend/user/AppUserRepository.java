@@ -11,4 +11,7 @@ public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     //questo servirà alla registrazione per bloccare username duplicati
     boolean existsByUsername(String username);
 
+    //Spring JPA creerà automaticamente la query contando gli utenti in quel ruolo.
+    long countByRole(UserRole role);
+
 }

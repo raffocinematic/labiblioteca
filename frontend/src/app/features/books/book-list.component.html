@@ -57,94 +57,96 @@
     </form>
   </section>
 
-  <section class="panel form-panel editor-panel">
-    <div class="panel-heading">
-      <div>
-        <h2>{{ editingBookId() === null ? 'Nuovo libro' : 'Modifica libro' }}</h2>
-        <p>{{ editingBookId() === null ? 'Inserisci i dati del volume da aggiungere.' : 'Aggiorna i dati del volume selezionato.' }}</p>
+  @if (authService.isAdmin()) {
+    <section class="panel form-panel editor-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>{{ editingBookId() === null ? 'Nuovo libro' : 'Modifica libro' }}</h2>
+          <p>{{ editingBookId() === null ? 'Inserisci i dati del volume da aggiungere.' : 'Aggiorna i dati del volume selezionato.' }}</p>
+        </div>
       </div>
-    </div>
 
-    <form [formGroup]="bookForm" (ngSubmit)="saveBook()">
-      <div class="form-grid">
+      <form [formGroup]="bookForm" (ngSubmit)="saveBook()">
+        <div class="form-grid">
 
-        <label>
-          Titolo
-          <input type="text" formControlName="title" />
-          @if (bookForm.controls.title.touched && bookForm.controls.title.hasError('required')) {
-          <span class="field-error">Il titolo e' obbligatorio.</span>
-          }
-          @if (bookForm.controls.title.touched && bookForm.controls.title.hasError('maxlength')) {
-          <span class="field-error">Il titolo non puo' superare 255 caratteri.</span>
-          }
-        </label>
-
-        <label>
-          Autore
-          <input type="text" formControlName="author" />
-          @if (bookForm.controls.author.touched && bookForm.controls.author.hasError('required')) {
-          <span class="field-error">L'autore e' obbligatorio.</span>
-          }
-          @if (bookForm.controls.author.touched && bookForm.controls.author.hasError('maxlength')) {
-          <span class="field-error">L'autore non puo' superare 255 caratteri.</span>
-          }
-        </label>
-
-        <label>
-          ISBN
-          <input type="text" formControlName="isbn" inputmode="numeric" />
-          @if (bookForm.controls.isbn.touched && bookForm.controls.isbn.hasError('invalidIsbn')) {
-          <span class="field-error">Inserisci un ISBN-10 o ISBN-13 valido.</span>
-          }
-        </label>
-
-        <label>
-          Genere
-          <select formControlName="genre">
-            @for (genre of genres; track genre) {
-            <option [value]="genre">{{ genre }}</option>
+          <label>
+            Titolo
+            <input type="text" formControlName="title" />
+            @if (bookForm.controls.title.touched && bookForm.controls.title.hasError('required')) {
+            <span class="field-error">Il titolo e' obbligatorio.</span>
             }
-          </select>
-          @if (bookForm.controls.genre.touched && bookForm.controls.genre.hasError('required')) {
-          <span class="field-error">Il genere e' obbligatorio.</span>
+            @if (bookForm.controls.title.touched && bookForm.controls.title.hasError('maxlength')) {
+            <span class="field-error">Il titolo non puo' superare 255 caratteri.</span>
+            }
+          </label>
+
+          <label>
+            Autore
+            <input type="text" formControlName="author" />
+            @if (bookForm.controls.author.touched && bookForm.controls.author.hasError('required')) {
+            <span class="field-error">L'autore e' obbligatorio.</span>
+            }
+            @if (bookForm.controls.author.touched && bookForm.controls.author.hasError('maxlength')) {
+            <span class="field-error">L'autore non puo' superare 255 caratteri.</span>
+            }
+          </label>
+
+          <label>
+            ISBN
+            <input type="text" formControlName="isbn" inputmode="numeric" />
+            @if (bookForm.controls.isbn.touched && bookForm.controls.isbn.hasError('invalidIsbn')) {
+            <span class="field-error">Inserisci un ISBN-10 o ISBN-13 valido.</span>
+            }
+          </label>
+
+          <label>
+            Genere
+            <select formControlName="genre">
+              @for (genre of genres; track genre) {
+              <option [value]="genre">{{ genre }}</option>
+              }
+            </select>
+            @if (bookForm.controls.genre.touched && bookForm.controls.genre.hasError('required')) {
+            <span class="field-error">Il genere e' obbligatorio.</span>
+            }
+          </label>
+
+          <label>
+            Anno pubblicazione
+            <input type="number" formControlName="publicationYear" min="0" max="9999" />
+          </label>
+
+          <label>
+            Copie totali
+            <input type="number" formControlName="totalCopies" />
+          </label>
+
+          <label>
+            Copie disponibili
+            <input type="number" formControlName="availableCopies" />
+            @if (
+            (bookForm.controls.availableCopies.touched || bookForm.controls.totalCopies.touched)
+            && bookForm.hasError('availableCopiesExceedTotalCopies')
+            ) {
+            <span class="field-error">Le copie disponibili non possono superare le copie totali.</span>
+            }
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="submit" [disabled]="saving() || bookForm.invalid">
+            {{ editingBookId() === null ? 'Crea libro' : 'Salva modifiche' }}
+          </button>
+
+          @if (editingBookId() !== null) {
+          <button type="button" class="secondary" (click)="resetForm()">
+            Annulla
+          </button>
           }
-        </label>
-
-        <label>
-          Anno pubblicazione
-          <input type="number" formControlName="publicationYear" min="0" max="9999" />
-        </label>
-
-        <label>
-          Copie totali
-          <input type="number" formControlName="totalCopies" />
-        </label>
-
-        <label>
-          Copie disponibili
-          <input type="number" formControlName="availableCopies" />
-          @if (
-          (bookForm.controls.availableCopies.touched || bookForm.controls.totalCopies.touched)
-          && bookForm.hasError('availableCopiesExceedTotalCopies')
-          ) {
-          <span class="field-error">Le copie disponibili non possono superare le copie totali.</span>
-          }
-        </label>
-      </div>
-
-      <div class="actions">
-        <button type="submit" [disabled]="saving() || bookForm.invalid">
-          {{ editingBookId() === null ? 'Crea libro' : 'Salva modifiche' }}
-        </button>
-
-        @if (editingBookId() !== null) {
-        <button type="button" class="secondary" (click)="resetForm()">
-          Annulla
-        </button>
-        }
-      </div>
-    </form>
-  </section>
+        </div>
+      </form>
+    </section>
+  }
 </div>
 
 <section class="panel">
@@ -174,7 +176,9 @@
         <th>Anno</th>
         <th>Copie</th>
         <th>Disponibili</th>
+        @if (authService.isAdmin()) {
         <th>Azioni</th>
+        }
       </tr>
       </thead>
 
@@ -188,6 +192,7 @@
         <td>{{ book.publicationYear ?? '-' }}</td>
         <td>{{ book.totalCopies }}</td>
         <td>{{ book.availableCopies }}</td>
+        @if (authService.isAdmin()) {
         <td class="row-actions">
           <button type="button" class="secondary" (click)="editBook(book)">
             Modifica
@@ -197,6 +202,7 @@
             Elimina
           </button>
         </td>
+        }
       </tr>
       }
       </tbody>

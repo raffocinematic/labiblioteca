@@ -18,6 +18,7 @@ import com.raffo.bibliotecabackend.common.dto.PageResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import com.raffo.bibliotecabackend.book.BookGenre;
 
 import java.util.List;
@@ -64,19 +65,22 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')")
     public BookResponse createBook(@Valid @RequestBody BookRequest request) {
         return BookResponse.from(bookService.create(request));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public BookResponse updateBook(@PathVariable Long id, @Valid @RequestBody BookRequest request) {
         return BookResponse.from(bookService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-        public void deleteBook(@PathVariable Long id) {
-            bookService.delete(id);
-        }
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteBook(@PathVariable Long id) {
+        bookService.delete(id);
+    }
 
 }

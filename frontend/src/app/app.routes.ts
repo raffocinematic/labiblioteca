@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { AppShellComponent } from './layout/app-shell/app-shell.component';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -24,6 +25,16 @@ export const routes: Routes = [
       {
         path: 'books',
         loadComponent: () => import('./features/books/book-list.component').then((m) => m.BookListComponent)
+      },
+      {
+        path: 'admin/users',
+        canActivate: [adminGuard],
+        loadComponent: () => import('./features/admin/users/admin-users.component').then((m) => m.AdminUsersComponent)
+      },
+      {
+        path: 'admin/reports',
+        canActivate: [adminGuard],
+        loadComponent: () => import('./features/admin/reports/admin-reports.component').then((m) => m.AdminReportsComponent)
       }
     ]
   },

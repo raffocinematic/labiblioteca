@@ -17,8 +17,10 @@ public class AppUser {
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
+    // JPA salva nel DB il nome dell'enum
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private String role = "ROLE_USER";
+    private UserRole role = UserRole.ROLE_USER;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
@@ -27,9 +29,17 @@ public class AppUser {
 
     }
 
+    //questo costruttore crea sempre utenti normali.
     public AppUser(String username, String passwordHash) {
         this.username = username;
         this.passwordHash = passwordHash;
+    }
+
+    //questo costruttore permette di creare esplicitamente un admin senza aggiungere seter pubblici sul ruolo
+    public AppUser(String username, String passwordHash, UserRole role) {
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.role = role;
     }
 
     public Long getId() {
@@ -44,11 +54,15 @@ public class AppUser {
         return passwordHash;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public void changeRole(UserRole role) {
+        this.role = role;
     }
 }

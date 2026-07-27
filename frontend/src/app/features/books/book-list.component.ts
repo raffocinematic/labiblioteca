@@ -5,6 +5,7 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModu
 
 import { Book, BookGenre, BookRequest } from '../../core/models/book.model';
 import { BookApiService } from '../../core/services/book-api.service';
+import { AuthService } from '../../core/services/auth.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 @Component({
@@ -56,7 +57,8 @@ protected readonly genres: BookGenre[] = [
 
   constructor(
     private readonly bookApiService: BookApiService,
-    private readonly formBuilder: FormBuilder
+    private readonly formBuilder: FormBuilder,
+    protected readonly authService: AuthService
   ) {
     this.bookForm = this.formBuilder.nonNullable.group({
       title: ['', [Validators.required, Validators.maxLength(255)]],
@@ -124,6 +126,10 @@ protected goToNextPage(): void {
 }
 
   protected saveBook(): void {
+    if (!this.authService.isAdmin()) {
+      return;
+    }
+
     if (this.bookForm.invalid) {
       this.bookForm.markAllAsTouched();
       return;
@@ -153,6 +159,10 @@ protected goToNextPage(): void {
   }
 
   protected editBook(book: Book): void {
+    if (!this.authService.isAdmin()) {
+      return;
+    }
+
     this.editingBookId.set(book.id);
 
     this.bookForm.setValue({
@@ -167,6 +177,10 @@ protected goToNextPage(): void {
   }
 
   protected deleteBook(book: Book): void {
+    if (!this.authService.isAdmin()) {
+      return;
+    }
+
     const confirmed = window.confirm(`Vuoi eliminare "${book.title}"?`);
 
     if (!confirmed) {

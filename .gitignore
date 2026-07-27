@@ -32,6 +32,8 @@ frontend/.git-frontend-backup/
 AUTH.md
 BE_DEVELOP.md
 ISBN.md
+KEYCLOAK_INTEGRATION_GUIDE.md
+JENKINS.md
 
 # Environment
 .env

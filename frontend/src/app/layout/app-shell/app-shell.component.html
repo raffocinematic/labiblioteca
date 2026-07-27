@@ -20,6 +20,11 @@
       <nav aria-label="Navigazione principale">
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Home</a>
         <a routerLink="/books" routerLinkActive="active" (click)="closeMenu()">Libri</a>
+
+        @if (authService.isAdmin()) {
+          <a routerLink="/admin/users" routerLinkActive="active" (click)="closeMenu()">Utenti</a>
+          <a routerLink="/admin/reports" routerLinkActive="active" (click)="closeMenu()">Report</a>
+        }
       </nav>
 
       <button type="button" class="logout" (click)="logout()">
