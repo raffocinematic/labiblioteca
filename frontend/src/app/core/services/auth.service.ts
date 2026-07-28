@@ -20,9 +20,9 @@ export class AuthService {
   constructor(private readonly http: HttpClient) {
   }
 
-// login e register chiamano il backend
-//tap salva il token quando la chiamata va bene
-//signal permette di mostrare username/logged state nella UI
+  // login e register chiamano il backend
+  // tap salva il token quando la chiamata va bene
+  // signal permette di mostrare username/logged state nella UI
 
   login(request: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.authUrl}/login`, request)
@@ -34,7 +34,7 @@ export class AuthService {
       .pipe(tap((response) => this.saveSession(response)));
   }
 
-// nota: local storage va bene per ora ma in produzione un JWT nel browser va ragionato meglio per rischio XSS
+  // nota: local storage va bene per ora ma in produzione un JWT nel browser va ragionato meglio per rischio XSS
 
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
@@ -44,9 +44,9 @@ export class AuthService {
     return this.getToken() !== null;
   }
 
-isAdmin(): boolean {
-  return this.currentRole() === 'ROLE_ADMIN';
-}
+  isAdmin(): boolean {
+    return this.currentRole() === 'ROLE_ADMIN';
+  }
 
   logout(): void {
     localStorage.removeItem(this.tokenKey);

@@ -63,6 +63,11 @@ button {
   padding: 9px 12px;
 }
 
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 button.secondary {
   background: #e6ebf0;
   color: #1f2933;

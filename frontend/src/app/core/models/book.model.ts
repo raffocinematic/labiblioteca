@@ -34,16 +34,6 @@ export interface BookSearchFilters {
   publicationYear?: number | null;
 }
 
-// Il BE ora non restituisce più Book[] ma un wrapper paginato. Il generic <T> replica lato TS lo stesso concetto
-// del PageResponse<T> Java.
-export interface PageResponse<T> {
-  content: T[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-}
-
 export type BookGenre =
   | 'NARRATIVA'
   | 'GIALLO'

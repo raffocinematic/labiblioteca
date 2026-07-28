@@ -31,13 +31,23 @@
       <tr>
         <td class="username">{{ user.username }}</td>
         <td>{{ user.role }}</td>
-        <td>{{ user.createdAt }}</td>
+        <td>{{ formatCreatedAt(user.createdAt) }}</td>
         <td class="row-actions">
-          <button type="button" class="secondary" (click)="changeRole(user, 'ROLE_USER')">
+          <button
+            type="button"
+            class="secondary"
+            [disabled]="user.role === 'ROLE_USER'"
+            (click)="changeRole(user, 'ROLE_USER')"
+          >
             User
           </button>
 
-          <button type="button" class="secondary" (click)="changeRole(user, 'ROLE_ADMIN')">
+          <button
+            type="button"
+            class="secondary"
+            [disabled]="user.role === 'ROLE_ADMIN'"
+            (click)="changeRole(user, 'ROLE_ADMIN')"
+          >
             Admin
           </button>
 

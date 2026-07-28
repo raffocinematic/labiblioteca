@@ -1,4 +1,4 @@
-import { PageResponse } from './book.model';
+import { PageResponse } from './page.model';
 
 export type UserRole = 'ROLE_USER' | 'ROLE_ADMIN';
 

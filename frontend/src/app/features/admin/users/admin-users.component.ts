@@ -1,4 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { AppUser, UserRole } from '../../../core/models/user.model';
 import { UserAdminApiService } from '../../../core/services/user-admin-api.service';
@@ -39,9 +40,15 @@ export class AdminUsersComponent implements OnInit {
   }
 
   protected changeRole(user: AppUser, role: UserRole): void {
+    if (user.role === role) {
+      return;
+    }
+
     this.userAdminApiService.updateUserRole(user.id, role).subscribe({
       next: () => this.loadUsers(),
-      error: () => this.error.set('Impossibile modificare il ruolo.')
+      error: (error: unknown) => {
+        this.error.set(this.getApiErrorMessage(error, 'Impossibile modificare il ruolo.'));
+      }
     });
   }
 
@@ -54,7 +61,28 @@ export class AdminUsersComponent implements OnInit {
 
     this.userAdminApiService.deleteUser(user.id).subscribe({
       next: () => this.loadUsers(),
-      error: () => this.error.set("Impossibile eliminare l'utente.")
+      error: (error: unknown) => {
+        this.error.set(this.getApiErrorMessage(error, "Impossibile eliminare l'utente."));
+      }
     });
+  }
+
+  protected formatCreatedAt(createdAt: string): string {
+    return new Intl.DateTimeFormat('it-IT', {
+      dateStyle: 'short',
+      timeStyle: 'short'
+    }).format(new Date(createdAt));
+  }
+
+  private getApiErrorMessage(error: unknown, fallbackMessage: string): string {
+    if (error instanceof HttpErrorResponse) {
+      const message = error.error?.message;
+
+      if (typeof message === 'string' && message.trim().length > 0) {
+        return message;
+      }
+    }
+
+    return fallbackMessage;
   }
 }
