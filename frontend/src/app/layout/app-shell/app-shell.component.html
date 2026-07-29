@@ -24,6 +24,7 @@
         @if (authService.isAdmin()) {
           <a routerLink="/admin/users" routerLinkActive="active" (click)="closeMenu()">Utenti</a>
           <a routerLink="/admin/reports" routerLinkActive="active" (click)="closeMenu()">Report</a>
+        <a routerLink="/admin/audit-logs" routerLinkActive="active" (click)="closeMenu()">Audit log</a>
         }
       </nav>
 

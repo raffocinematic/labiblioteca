@@ -9,5 +9,6 @@
     <include file="db/migration/002-create-app-users-table.xml"/>
     <include file="db/migration/003-add-books-copies-check.xml"/>
     <include file="db/migration/004-add-books-genre.xml"/>
+    <include file="db/migration/005-create-audit-logs-table.xml"/>
 
 </databaseChangeLog>

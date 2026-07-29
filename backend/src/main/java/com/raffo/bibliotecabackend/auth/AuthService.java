@@ -11,6 +11,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.raffo.bibliotecabackend.common.exception.BadRequestException;
+import com.raffo.bibliotecabackend.audit.AuditAction;
+import com.raffo.bibliotecabackend.audit.AuditLogService;
+
+import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
@@ -19,11 +23,16 @@ public class AuthService {
     private final AppUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuditLogService auditLogService;
 
-    public AuthService(AppUserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public AuthService(AppUserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       JwtService jwtService,
+                       AuditLogService auditLogService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
+        this.auditLogService = auditLogService;
     }
 
     @Transactional
@@ -33,7 +42,7 @@ public class AuthService {
             throw new BadRequestException("Passwords don't match");
         }
 
-        if(userRepository.existsByUsername(request.username())) {
+        if (userRepository.existsByUsername(request.username())) {
             throw new ConflictException("This username" + request.username() + "is already taken");
         }
 
@@ -46,10 +55,18 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request) {
         AppUser user = userRepository.findByUsername(request.username())
-                .orElseThrow(() -> new UnauthorizedException("Credenziali non valide."));
+                .orElse(null);
 
-        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
-            throw new UnauthorizedException("Credenziali non valide.");
+        if (user == null || !passwordEncoder.matches(request.password(), user.getPasswordHash())) {
+            auditLogService.record(
+                    AuditAction.LOGIN_FAILED,
+                    request.username(),
+                    "AUTH",
+                    null,
+                    Map.of("username", request.username())
+            );
+
+            throw new UnauthorizedException("Credenziali non valide");
         }
 
         return new AuthResponse(jwtService.generateToken(user), user.getUsername(), user.getRole().name());

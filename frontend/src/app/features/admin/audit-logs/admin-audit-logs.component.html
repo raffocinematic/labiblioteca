@@ -1,0 +1,70 @@
+<app-page-header
+  title="Audit log"
+  description="Storico delle operazioni importanti."
+/>
+
+@if (error()) {
+<div class="alert">
+  {{ error() }}
+</div>
+}
+
+<section class="panel">
+  @if (loading()) {
+  <p class="state">Caricamento...</p>
+  } @else if (auditLogs().length === 0) {
+  <p class="state">Nessun audit log disponibile.</p>
+  } @else {
+  <div class="table-wrapper">
+    <table>
+      <thead>
+      <tr>
+        <th>Data</th>
+        <th>Azione</th>
+        <th>Utente</th>
+        <th>Entita'</th>
+        <th>Dettagli</th>
+      </tr>
+      </thead>
+
+      <tbody>
+      @for (auditLog of auditLogs(); track auditLog.id) {
+      <tr>
+        <td>{{ formatOccurredAt(auditLog.occurredAt) }}</td>
+        <td>
+          <span class="action">{{ auditLog.action }}</span>
+        </td>
+        <td>{{ auditLog.actorUsername }}</td>
+        <td>{{ formatEntity(auditLog) }}</td>
+        <td>
+          @if (detailEntries(auditLog.details).length === 0) {
+          -
+          } @else {
+          <div class="details">
+            @for (detail of detailEntries(auditLog.details); track detail[0]) {
+            <span>
+                        <strong>{{ detail[0] }}:</strong> {{ detail[1] }}
+                      </span>
+            }
+          </div>
+          }
+        </td>
+      </tr>
+      }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination">
+    <button type="button" (click)="previousPage()" [disabled]="page() === 0">
+      Precedente
+    </button>
+
+    <span>Pagina {{ page() + 1 }} di {{ totalPages() }}</span>
+
+    <button type="button" (click)="nextPage()" [disabled]="page() + 1 >= totalPages()">
+      Successiva
+    </button>
+  </div>
+  }
+</section>

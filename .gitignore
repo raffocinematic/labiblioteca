@@ -35,6 +35,7 @@ ISBN.md
 KEYCLOAK_INTEGRATION_GUIDE.md
 JENKINS.md
 ROLES.md
+AUDIT.md
 
 # Environment
 .env

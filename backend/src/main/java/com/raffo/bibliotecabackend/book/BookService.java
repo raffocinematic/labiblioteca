@@ -9,7 +9,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.raffo.bibliotecabackend.common.exception.BadRequestException;
+import com.raffo.bibliotecabackend.audit.AuditAction;
+import com.raffo.bibliotecabackend.audit.AuditEventPublisher;
 
+import java.util.Map;
 import java.util.List;
 
 @Service
@@ -17,9 +20,12 @@ import java.util.List;
 public class BookService {
 
     private final BookRepository bookRepository;
+    // Book service deve poter pubblicare eventi audit ma senza conoscere repository o tabella audit
+    private final AuditEventPublisher auditEventPublisher;
 
-    public BookService(BookRepository bookRepository) {
+    public BookService(BookRepository bookRepository, AuditEventPublisher auditEventPublisher) {
         this.bookRepository = bookRepository;
+        this.auditEventPublisher = auditEventPublisher;
     }
 
     /**
@@ -55,7 +61,20 @@ public class BookService {
                 request.availableCopies()
         );
 
-        return bookRepository.save(book);
+        // Prima salvi il libro, poi hai l'Id generato dal DB, poi pubblichi l'evento.
+        Book savedBook = bookRepository.save(book);
+
+        auditEventPublisher.publish(
+                AuditAction.BOOK_CREATED,
+                "Book",
+                savedBook.getId(),
+                Map.of(
+                        "title", savedBook.getTitle(),
+                        "isbn", savedBook.getIsbn()
+                )
+        );
+
+        return savedBook;
     }
 
     /**
@@ -92,13 +111,39 @@ public class BookService {
         book.setTotalCopies(request.totalCopies());
         book.setAvailableCopies(request.availableCopies());
 
-        return bookRepository.save(book);
+        Book savedBook = bookRepository.save(book);
+
+        auditEventPublisher.publish(
+                AuditAction.BOOK_UPDATED,
+                "Book",
+                savedBook.getId(),
+                Map.of(
+                        "title", savedBook.getTitle(),
+                        "isbn", savedBook.getIsbn()
+                )
+        );
+
+        return savedBook;
     }
 
     @Transactional
     public void delete(Long id) {
         Book book = findById(id);
+
+        String title = book.getTitle();
+        String isbn = book.getIsbn();
+
         bookRepository.delete(book);
+
+        auditEventPublisher.publish(
+                AuditAction.BOOK_DELETED,
+                "Book",
+                id,
+                Map.of(
+                        "title", title,
+                        "isbn", isbn
+                )
+        );
     }
 
     public List<Book> search(String title, String author, String isbn, BookGenre genre, Integer publicationYear) {
