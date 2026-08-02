@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { API_BASE_URL } from '../config/api.config';
-import { Book, BookRequest, BookSearchFilters } from '../models/book.model';
+import { Book, BookImportReport, BookRequest, BookSearchFilters } from '../models/book.model';
 import { PageResponse } from '../models/page.model';
 
 @Injectable({
@@ -62,5 +62,12 @@ export class BookApiService {
     }
 
     return this.http.get<Book[]>(`${this.booksUrl}/search`, { params });
+  }
+
+  importBooks(file: File): Observable<BookImportReport> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post<BookImportReport>(`${this.booksUrl}/import`, formData);
   }
 }

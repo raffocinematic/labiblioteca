@@ -297,3 +297,89 @@ tbody tr:last-child td {
   font-size: 0.875rem;
   font-weight: 600;
 }
+
+.import-block {
+  border-top: 1px solid #e6ebf0;
+}
+
+.import-heading {
+  border-bottom: 0;
+}
+
+.import-body {
+  padding: 20px;
+}
+
+.import-report {
+  border-top: 1px solid #e6ebf0;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.report-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.report-summary span {
+  background: #f1f5f9;
+  border-radius: 999px;
+  color: #33404c;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 6px 8px;
+}
+
+.import-errors {
+  margin-top: 14px;
+}
+
+.import-errors h3 {
+  color: #b42318;
+  font-size: 0.95rem;
+  margin: 0 0 8px;
+}
+
+.import-errors ul {
+  color: #b42318;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.import-errors li + li {
+  margin-top: 6px;
+}
+
+.csv-rules {
+  background: #f8fafc;
+  border: 1px solid #e6ebf0;
+  border-radius: 6px;
+  color: #33404c;
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 12px;
+}
+
+.csv-rules p {
+  color: #52616d;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.csv-rules code,
+.csv-rules span {
+  color: #1f2933;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.csv-rules code {
+  background: #ffffff;
+  border: 1px solid #dfe5eb;
+  border-radius: 4px;
+  padding: 6px 8px;
+}

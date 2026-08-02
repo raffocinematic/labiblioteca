@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule,
   ValidationErrors, Validators } from '@angular/forms';
 
-import { Book, BookGenre, BookRequest } from '../../core/models/book.model';
+import { Book, BookGenre, BookImportReport, BookRequest } from '../../core/models/book.model';
 import { BookApiService } from '../../core/services/book-api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -28,6 +28,10 @@ export class BookListComponent implements OnInit {
   protected readonly sort = signal('title');
 
   protected readonly bookForm;
+
+  protected readonly importing = signal(false);
+  protected readonly selectedImportFile = signal<File | null>(null);
+  protected readonly importReport = signal<BookImportReport | null>(null);
 
   protected readonly searchForm!: FormGroup<{
     title: FormControl<string | null>;
@@ -330,6 +334,43 @@ private isValidIsbn13(isbn: string): boolean {
   }
 
   return sum % 10 === 0;
+}
+
+protected onImportFileSelected(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0] ?? null;
+
+  this.selectedImportFile.set(file);
+  this.importReport.set(null);
+}
+
+protected importBooks(): void {
+  if (!this.authService.isAdmin()) {
+    return;
+  }
+
+  const file = this.selectedImportFile();
+
+  if (file === null) {
+    this.error.set('Seleziona un file CSV da importare.');
+    return;
+  }
+
+  this.importing.set(true);
+  this.error.set(null);
+  this.importReport.set(null);
+
+  this.bookApiService.importBooks(file).subscribe({
+    next: (report) => {
+      this.importReport.set(report);
+      this.importing.set(false);
+      this.loadBooks(0);
+    },
+    error: (error: unknown) => {
+      this.error.set(this.getApiErrorMessage(error, 'Impossibile importare il file CSV.'));
+      this.importing.set(false);
+    }
+  });
 }
 
 }

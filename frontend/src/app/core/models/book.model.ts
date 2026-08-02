@@ -50,3 +50,15 @@ export type BookGenre =
   | 'CLASSICO'
   | 'TECNICO'
   | 'ALTRO';
+
+  export interface BookImportError {
+    rowNumber: number;
+    message: string;
+  }
+
+  export interface BookImportReport {
+    rowsRead: number;
+    booksCreated: number;
+    booksDiscarded: number;
+    errors: BookImportError[];
+  }

@@ -145,6 +145,71 @@
           }
         </div>
       </form>
+
+      <div class="import-block">
+        <div class="panel-heading import-heading">
+          <div>
+            <h2>Import CSV</h2>
+            <p>Carica piu' libri in una sola operazione.</p>
+          </div>
+        </div>
+
+        <div class="import-body">
+          <label>
+            File CSV
+            <input type="file" accept=".csv,text/csv" (change)="onImportFileSelected($event)" />
+          </label>
+
+          <div class="csv-rules">
+            <p>Header richiesto:</p>
+            <code>title,author,isbn,genre,publicationYear,totalCopies,availableCopies</code>
+
+            <p>Generi ammessi:</p>
+            <span>
+              NARRATIVA, GIALLO, FANTASY, FANTASCIENZA, STORICO, SAGGISTICA,
+              BIOGRAFIA, POESIA, TEATRO, HORROR, AVVENTURA, BAMBINI_RAGAZZI,
+              CLASSICO, TECNICO, ALTRO
+            </span>
+
+            <p>Esempio riga:</p>
+            <code>Clean Code,Robert C. Martin,9780132350884,TECNICO,2008,3,3</code>
+          </div>
+
+          <div class="actions">
+            <button
+              type="button"
+              [disabled]="importing() || selectedImportFile() === null"
+              (click)="importBooks()"
+            >
+              {{ importing() ? 'Importazione...' : 'Importa libri' }}
+            </button>
+          </div>
+
+          @if (importReport(); as report) {
+            <div class="import-report">
+              <div class="report-summary">
+                <span>Righe lette: {{ report.rowsRead }}</span>
+                <span>Creati: {{ report.booksCreated }}</span>
+                <span>Scartati: {{ report.booksDiscarded }}</span>
+              </div>
+
+              @if (report.errors.length > 0) {
+                <div class="import-errors">
+                  <h3>Errori</h3>
+
+                  <ul>
+                    @for (error of report.errors; track error.rowNumber) {
+                      <li>
+                        Riga {{ error.rowNumber }}: {{ error.message }}
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
     </section>
   }
 </div>

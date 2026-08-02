@@ -20,6 +20,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import com.raffo.bibliotecabackend.book.BookGenre;
+import com.raffo.bibliotecabackend.book.dto.BookImportReport;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -81,6 +85,12 @@ public class BookController {
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteBook(@PathVariable Long id) {
         bookService.delete(id);
+    }
+
+    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    public BookImportReport importBooks(@RequestPart("file") MultipartFile file) {
+        return bookService.importFromCsv(file);
     }
 
 }
