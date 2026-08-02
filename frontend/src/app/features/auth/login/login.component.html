@@ -1,30 +1,63 @@
 <main class="auth-page">
-  <section class="auth-card">
-    <h1>Accedi</h1>
-    <p>Entra nella gestione della biblioteca.</p>
+  <section class="auth-layout" aria-label="Accesso biblioteca gestionale">
+    <aside class="auth-visual">
+      <img
+        class="auth-image"
+        src="/library-dashboard-hero.png"
+        alt="Postazione moderna per la gestione del catalogo biblioteca"
+      />
 
-    @if (error()) {
-    <div class="alert">
-      {{ error() }}
-    </div>
-    }
+      <div class="visual-content">
+        <p class="eyebrow">Biblioteca Gestionale</p>
+        <h1>Catalogo, utenti e report in un unico pannello.</h1>
 
-    <form [formGroup]="loginForm" (ngSubmit)="login()">
-      <label>
-        Username
-        <input type="text" formControlName="username" autocomplete="username" />
-      </label>
+        <ul class="feature-list">
+          <li>Catalogo centralizzato</li>
+          <li>Ruoli amministrativi</li>
+          <li>Report e audit operativi</li>
+        </ul>
+      </div>
+    </aside>
 
-      <label>
-        Password
-        <input type="password" formControlName="password" autocomplete="current-password" />
-      </label>
+    <section class="auth-card">
+      <p class="eyebrow">Accesso riservato</p>
+      <h2>Accedi al pannello</h2>
+      <p class="subtitle">Inserisci le credenziali per continuare la gestione della biblioteca.</p>
 
-      <button type="submit" [disabled]="loading()">
-        {{ loading() ? 'Accesso...' : 'Login' }}
-      </button>
-    </form>
+      @if (error()) {
+      <div class="alert" role="alert">
+        {{ error() }}
+      </div>
+      }
 
-    <a routerLink="/register">Non hai un account? Registrati</a>
+      <form [formGroup]="loginForm" (ngSubmit)="login()" [attr.aria-busy]="loading()">
+        <label>
+          <span>Username</span>
+          <input type="text" formControlName="username" autocomplete="username" />
+        </label>
+
+        @if (loginForm.controls.username.touched && loginForm.controls.username.hasError('required')) {
+        <p class="field-error">Inserisci lo username.</p>
+        }
+
+        <label>
+          <span>Password</span>
+          <input type="password" formControlName="password" autocomplete="current-password" />
+        </label>
+
+        @if (loginForm.controls.password.touched && loginForm.controls.password.hasError('required')) {
+        <p class="field-error">Inserisci la password.</p>
+        }
+
+        <button type="submit" [disabled]="loading() || loginForm.invalid">
+          {{ loading() ? 'Accesso in corso...' : 'Accedi' }}
+        </button>
+      </form>
+
+      <p class="register-link">
+        Non hai un account?
+        <a routerLink="/register">Registrati</a>
+      </p>
+    </section>
   </section>
 </main>

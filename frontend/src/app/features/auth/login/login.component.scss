@@ -6,20 +6,107 @@
   padding: 24px;
 }
 
-.auth-card {
+.auth-layout {
   background: #ffffff;
-  border: 1px solid #d8dee6;
+  border: 1px solid #d9e0e6;
   border-radius: 8px;
-  max-width: 420px;
-  padding: 28px;
+  box-shadow: 0 22px 60px rgba(23, 32, 38, 0.14);
+  display: grid;
+  grid-template-columns: minmax(360px, 1.05fr) minmax(340px, 0.95fr);
+  max-width: 980px;
+  min-height: 560px;
+  overflow: hidden;
   width: 100%;
 }
 
-h1 {
+.auth-visual {
+  background: #172026;
+  color: #ffffff;
+  min-height: 560px;
+  overflow: hidden;
+  position: relative;
+}
+
+.auth-image {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.72;
+  width: 100%;
+}
+
+.auth-visual::after {
+  background: linear-gradient(180deg, rgba(23, 32, 38, 0.16), rgba(23, 32, 38, 0.88));
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.visual-content {
+  bottom: 0;
+  display: grid;
+  gap: 18px;
+  left: 0;
+  padding: 32px;
+  position: absolute;
+  right: 0;
+  z-index: 1;
+}
+
+.eyebrow {
+  color: #0f766e;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.auth-visual .eyebrow {
+  color: #99f6e4;
+}
+
+.visual-content h1 {
+  font-size: 2rem;
+  line-height: 1.15;
+  margin: 0;
+  max-width: 520px;
+}
+
+.feature-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.feature-list li {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  color: #f8fafc;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 7px 10px;
+}
+
+.auth-card {
+  align-content: center;
+  display: grid;
+  padding: 42px;
+}
+
+h2 {
+  color: #172026;
+  font-size: 2rem;
+  line-height: 1.15;
   margin: 0 0 8px;
 }
 
-p {
+.subtitle {
   color: #5b6773;
   margin: 0 0 24px;
 }
@@ -35,10 +122,26 @@ label {
   font-weight: 600;
 }
 
+label span {
+  color: #26323b;
+  font-size: 0.9375rem;
+}
+
 input {
   border: 1px solid #ccd4dd;
   border-radius: 6px;
-  padding: 10px 12px;
+  color: #172026;
+  min-height: 46px;
+  padding: 11px 12px;
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+input:focus {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.16);
+  outline: 0;
 }
 
 button {
@@ -47,7 +150,17 @@ button {
   border-radius: 6px;
   color: #ffffff;
   cursor: pointer;
+  font-weight: 700;
+  min-height: 46px;
   padding: 11px 14px;
+  transition:
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+
+button:hover:not(:disabled) {
+  background: #26323b;
+  transform: translateY(-1px);
 }
 
 button:disabled {
@@ -56,16 +169,88 @@ button:disabled {
 }
 
 .alert {
-  background: #fdecec;
-  border: 1px solid #f4b4b4;
+  background: #fff1f0;
+  border: 1px solid #ffccc7;
   border-radius: 6px;
-  color: #8a1f1f;
+  color: #b42318;
   margin-bottom: 16px;
-  padding: 10px 12px;
+  padding: 12px 14px;
 }
 
-a {
+.field-error {
+  color: #b42318;
+  font-size: 0.875rem;
+  font-weight: 400;
+  margin: -10px 0 0;
+}
+
+.register-link {
+  color: #5b6773;
+  margin: 18px 0 0;
+  text-align: center;
+}
+
+.register-link a {
   color: #172026;
-  display: inline-block;
-  margin-top: 18px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 840px) {
+  .auth-layout {
+    grid-template-columns: 1fr;
+    max-width: 520px;
+    min-height: auto;
+  }
+
+  .auth-visual {
+    min-height: 220px;
+  }
+
+  .visual-content {
+    padding: 24px;
+  }
+
+  .visual-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .auth-card {
+    padding: 28px;
+  }
+}
+
+@media (max-width: 520px) {
+  .auth-page {
+    align-items: stretch;
+    padding: 0;
+  }
+
+  .auth-layout {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    min-height: 100dvh;
+  }
+
+  .auth-visual {
+    min-height: 190px;
+  }
+
+  .feature-list {
+    display: none;
+  }
+
+  .auth-card {
+    align-content: start;
+    padding: 24px;
+  }
+
+  h2 {
+    font-size: 1.625rem;
+  }
 }
